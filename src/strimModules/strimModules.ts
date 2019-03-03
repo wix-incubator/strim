@@ -1,8 +1,8 @@
 import { IStrimModulesOptions } from '../types'
-const express = require('express')
-const expressWs = require('express-ws')
-const path = require('path')
-const fs = require('fs-extra')
+import express from 'express'
+import expressWs from 'express-ws'
+import path from 'path'
+import fs from 'fs-extra'
 
 const strimModules = {}
 
@@ -10,7 +10,7 @@ function getRouter(modulesPath: string) {
   const router = express.Router()
   const files = fs.readdirSync(modulesPath)
   // files.map(fs.statSync)
-  files.forEach(moduleName => {
+  files.forEach((moduleName: string) => {
     strimModules[moduleName] = require(path.join(modulesPath, moduleName))
   })
   router.ws('/', (ws, req) => {

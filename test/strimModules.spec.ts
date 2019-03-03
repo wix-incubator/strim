@@ -1,6 +1,6 @@
-const express = require('express')
-const path = require('path')
-const { strimModules } = require('../src/index')
+import express from 'express'
+import path from 'path'
+import { strimModules } from '../src/index'
 
 describe('Strim Modules', () => {
   let app
