@@ -1,0 +1,89 @@
+{
+  "name": "@wix/strim",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "author": {
+    "name": "Amit Shalev & Dean Shub",
+    "email": "deansh@wix.com"
+  },
+  "main": "dist/src/index.js",
+  "module": "dist/es/src/index.js",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "http://npm.dev.wixpress.com/"
+  },
+  "scripts": {
+    "start": "yoshi start",
+    "precommit": "lint-staged",
+    "pretest": "tsc",
+    "test": "jest",
+    "release": "npm publish"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.9",
+    "@types/node": "^8.0.0",
+    "@wix/tslint-config-wixstores": "^1.0.22",
+    "jest": "^24.1.0",
+    "jest-raw-loader": "^1.0.1",
+    "lint-staged": "^7.2.2",
+    "prettier": "^1.16.4",
+    "ts-jest": "^24.0.0",
+    "typescript": "^3.3.3333"
+  },
+  "lint-staged": {
+    "linters": {
+      "*.{js,ts}": "yoshi lint"
+    },
+    "ignore": [
+      "**/*.d.ts"
+    ]
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/src/.*\\.(spec|driver|testKit|testkit)\\.(ts|tsx)$",
+      "/test/.*\\.*\\.*$",
+      "/src/icons/.*\\.*\\.*$",
+      ".*\\.graphql$",
+      "devUtils.ts"
+    ],
+    "coverageReporters": [
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 96,
+        "branches": 90,
+        "functions": 95,
+        "lines": 96
+      }
+    },
+    "transform": {
+      "\\.(ts|tsx)$": "ts-jest",
+      "\\.(gql|graphql)$": "<rootDir>/node_modules/jest-raw-loader/index.js"
+    },
+    "testRegex": "/test/.*\\.spec\\.(ts|tsx)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node",
+      "d.ts"
+    ],
+    "moduleNameMapper": {
+      "@wix/wixstores-client-core/dist/es/src/(.*)$": "<rootDir>/node_modules/@wix/wixstores-client-core/dist/src/$1",
+      "@wix/native-components-infra/dist/es/src/(.*)$": "<rootDir>/node_modules/@wix/native-components-infra/dist/src/$1",
+      "!raw-loader!(.+graphql)$": "<rootDir>/src/services/$1"
+    },
+    "transformIgnorePatterns": [],
+    "testURL": "http://localhost:5554"
+  },
+  "yoshi": {
+    "hmr": "auto"
+  }
+}
