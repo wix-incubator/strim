@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const {strimModules} = require('../src/index');
 
 describe('Strim Modules', () => {
@@ -10,8 +11,8 @@ describe('Strim Modules', () => {
 
   describe('setup', () => {
     it('should do stuff', () => {
-      strimModules(app);
-      expect(app).toBeTruthy();
+      const newApp = strimModules(app, {modulesPath: path.resolve('modules')});
+      expect(newApp).toBeTruthy();
     });
   });
 });
