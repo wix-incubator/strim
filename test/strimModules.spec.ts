@@ -1,18 +1,20 @@
-const express = require('express');
-const path = require('path');
-const {strimModules} = require('../src/index');
+const express = require('express')
+const path = require('path')
+const { strimModules } = require('../src/index')
 
 describe('Strim Modules', () => {
-  let app;
+  let app
 
   beforeEach(() => {
-    app = express();
-  });
+    app = express()
+  })
 
   describe('setup', () => {
     it('should do stuff', () => {
-      const newApp = strimModules(app, {modulesPath: path.resolve('modules')});
-      expect(newApp).toBeTruthy();
-    });
-  });
-});
+      const newApp = strimModules(app, {
+        modulesPath: path.resolve('test/modules'),
+      })
+      expect(newApp).toBeTruthy()
+    })
+  })
+})

@@ -19,17 +19,30 @@
     "precommit": "lint-staged",
     "pretest": "tsc",
     "test": "jest",
+    "posttest": "tslint src/**/*.ts",
     "release": "npm publish"
   },
   "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-proposal-class-properties": "^7.3.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.4",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-typescript": "^7.3.3",
     "@types/jest": "^24.0.9",
     "@types/node": "^8.0.0",
-    "@wix/tslint-config-wixstores": "^1.0.22",
+    "babel-jest": "^24.1.0",
     "jest": "^24.1.0",
     "jest-raw-loader": "^1.0.1",
     "lint-staged": "^7.2.2",
     "prettier": "^1.16.4",
     "ts-jest": "^24.0.0",
+    "tslint": "^5.13.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-consistent-codestyle": "^1.15.0",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-microsoft-contrib": "^6.0.0",
+    "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.3.3333"
   },
   "lint-staged": {
@@ -62,7 +75,7 @@
       }
     },
     "transform": {
-      "\\.(ts|tsx)$": "ts-jest",
+      "\\.(ts|tsx)$": "babel-jest",
       "\\.(gql|graphql)$": "<rootDir>/node_modules/jest-raw-loader/index.js"
     },
     "testRegex": "/test/.*\\.spec\\.(ts|tsx)$",
