@@ -1,5 +1,3 @@
-import Strim from './Strim/index';
-import strimModules from './strimModules';
-
+import Strim from './Strim';
+export {default as strimModules} from './strimModules';
 export default Strim;
-export { strimModules };
