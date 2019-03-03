@@ -1,4 +1,4 @@
-import Strim from './Strim';
+import Strim from './Strim/index';
 import strimModules from './strimModules';
 
 export default Strim;
