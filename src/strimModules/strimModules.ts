@@ -1,13 +1,17 @@
 import {IStrimModulesOptions} from '../types';
-import express from 'express';
-import expressWs from 'express-ws';
+const express = require('express');
+const expressWs = require('express-ws');
+const path = require('path');
 
 function getRouter() {
   const router = express.Router();
   return router;
 }
 
-function strimModules(app, {wsRoute = '/strim'}: IStrimModulesOptions) {
+function strimModules(
+  app,
+  {wsRoute = '/strim', modulesPath = path.resolve('node_modules')}: IStrimModulesOptions = {}
+) {
   expressWs(app);
   app.use(wsRoute, getRouter());
   return app;

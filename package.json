@@ -83,9 +83,6 @@
     "transformIgnorePatterns": [],
     "testURL": "http://localhost:5554"
   },
-  "yoshi": {
-    "hmr": "auto"
-  },
   "dependencies": {
     "express-ws": "^4.0.0",
     "rxjs": "^6.4.0",
