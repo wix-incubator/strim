@@ -6,6 +6,10 @@ export interface IStrimExecFuncData {
   args?: any;
 }
 
+export interface IStrimModulesOptions {
+  wsRoute?: string;
+}
+
 export enum Environment {
   Server,
   Client,

@@ -87,7 +87,11 @@
     "hmr": "auto"
   },
   "dependencies": {
+    "express-ws": "^4.0.0",
     "rxjs": "^6.4.0",
     "webpack": "^4.29.6"
+  },
+  "optionalDependencies": {
+    "express": "^4.16.4"
   }
 }

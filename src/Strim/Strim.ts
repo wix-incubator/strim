@@ -1,6 +1,6 @@
 import {Observer, Observable} from 'rxjs';
 import * as utils from './strimUtils';
-import {Environment, IStrimExecFuncData} from './types';
+import {Environment, IStrimExecFuncData} from '../types';
 
 interface IStrim {
   pipe(strim: IStrimExecFuncData): IStrim;
