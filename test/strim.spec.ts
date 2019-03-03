@@ -1,7 +1,7 @@
 import Strim from '../src/index';
 
 describe('Strim', () => {
-  let strim;
+  let strim: Strim;
 
   beforeEach(() => {
     strim = new Strim();
@@ -11,7 +11,7 @@ describe('Strim', () => {
     it('should create a new count property', done => {
       let index = 0;
       const arr = [1, 2, 3, 4];
-      new Strim()
+      strim
         .pipe({
           module: 'observables',
           func: 'get',
@@ -31,4 +31,8 @@ describe('Strim', () => {
         });
     });
   });
+
+  // describe('client 2 client', () => {});
+  // describe('server 2 server', () => {});
+  // describe('client 2 server', () => {});
 });
