@@ -14,8 +14,8 @@ describe('Strim', () => {
       new Strim()
         .pipe({
           module: 'observables',
-          function: 'get',
-          arguments: arr,
+          func: 'get',
+          args: arr,
         })
         .subscribe({
           next: val => {

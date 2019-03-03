@@ -1,14 +1,14 @@
-import {Observer} from "rxjs";
+import {Observer} from 'rxjs';
 
 export interface IStrimExecFuncData {
-  module: string;
-  func: string;
-  args: any[];
+  module?: string;
+  func?: string;
+  args?: any;
 }
 
 export enum Environment {
   Server,
-  Client
+  Client,
 }
 
 export interface IStrim {

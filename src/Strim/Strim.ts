@@ -9,15 +9,15 @@ interface IStrim {
 }
 
 export default class Strim implements IStrim {
-
   private _strim: (IStrimExecFuncData | Environment | IStrim)[] = [];
-  private env; Environment;
+  private env;
+  Environment;
 
-  constructor(env: Environment = utils.getDefaultEnv()){
+  constructor(env: Environment = utils.getDefaultEnv()) {
     this.env = env;
   }
 
-  public pipe(strim: IStrimExecFuncData): IStrim {
+  public pipe(strim: IStrimExecFuncData = {module: 'global', func: 'default'}): IStrim {
     this._strim.push(strim);
     return this;
   }
@@ -27,8 +27,12 @@ export default class Strim implements IStrim {
     return this;
   }
 
-  public subscribe(observer: Observer<any>): IStrim{
-    const splittedStream =  utils.splitToEnvironment(this._strim);
+  public subscribe(
+    observerOrNext?: Observer<any> | ((value: any) => void),
+    error?: (error: any) => void,
+    complete?: () => void
+  ): IStrim {
+    const splittedStream = utils.splitToEnvironment(this._strim);
 
     return this;
   }
