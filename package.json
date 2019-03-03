@@ -85,5 +85,8 @@
   },
   "yoshi": {
     "hmr": "auto"
+  },
+  "dependencies": {
+    "rxjs": "^6.4.0"
   }
 }

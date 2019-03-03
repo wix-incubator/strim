@@ -1,2 +1,5 @@
-import Counter from './counter';
-export default new Counter();
+import Strim from './Strim';
+import strimModules from './strimModules';
+
+export default Strim;
+export { strimModules };
