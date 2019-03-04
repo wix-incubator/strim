@@ -1,5 +1,5 @@
 {
-  "name": "@wix/strim",
+  "name": "strim-js",
   "version": "1.0.0",
   "license": "UNLICENSED",
   "author": {
@@ -11,9 +11,6 @@
   "files": [
     "dist"
   ],
-  "publishConfig": {
-    "registry": "http://npm.dev.wixpress.com/"
-  },
   "scripts": {
     "start": "babel-node --extensions \".ts\" test/startServer.ts",
     "precommit": "lint-staged",
