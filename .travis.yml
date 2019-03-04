@@ -7,4 +7,5 @@ install:
   yarn
 script:
   yarn test
+deploy:
   yarn run release
