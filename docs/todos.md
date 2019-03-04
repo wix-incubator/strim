@@ -1,14 +1,15 @@
 - [ ] Find the first use case for the library (stores excel?)
 - [x] start the repo in incubator
-- [ ]  remove yoshi form the project
+- [ ] remove yoshi form the project
 
 Feature list with priorities:
+
 - [ ] simple echo only client
 - [ ] add piping modules
-- [ ] middleware for express
-- [ ] server
+- [x] middleware for express
+- [x] simple echo only server
 - [ ] workers (client and server)
-- [ ]  markdown documentation
+- [ ] markdown documentation
 - [ ] example project
 - [ ] examples dir
 - [ ] paralelisem (fork + join)
