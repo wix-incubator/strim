@@ -7,7 +7,7 @@ describe('Strim', () => {
     strim = new Strim()
   })
 
-  describe('basic flow', () => {
+  describe('single pipe flow', () => {
     it('should create a new count property', done => {
       let index = 0
       const arr = [1, 2, 3, 4]
@@ -31,7 +31,6 @@ describe('Strim', () => {
         })
     })
   })
-
   // describe('client 2 client', () => {});
   // describe('server 2 server', () => {});
   // describe('client 2 server', () => {});

@@ -1,8 +1,8 @@
 import { IStrimExecFuncData, Environment, PipeItem } from '../types'
 import Strim from './Strim'
 import { from } from 'rxjs/observable/from'
-import { fromPromise } from 'rxjs/observable/fromPromise'
-import { isObservable, of } from 'rxjs'
+import { isObservable, of, pipe } from 'rxjs'
+
 export const splitToEnvironment = (items: PipeItem[]): Strim[] => {
   return items.reduce(
     (strims, current) => {
@@ -28,7 +28,7 @@ export const getDefaultEnv = () => {
 export const getPipedFunc = async (execFuncData: IStrimExecFuncData) => {
   const { module, func, args } = execFuncData
 
-  const src = await import('../../test/modules/globals')
+  const src = await import(module)
   const result = src[func].apply(src, args)
   return isObservable(result) ? result : of(result)
 }
@@ -37,10 +37,8 @@ export const runStrimFuncLocally = (
   currentComputedValue,
   execFuncDatas: IStrimExecFuncData[],
 ) => {
-  // return execFuncDatas.reduce((observable, currentFuncData) => {
-  //   //   // @ts-ignore
-  //   //   return observable.pipe(fromPromise(getPipedFunc(currentFuncData)))
-  //   // }, from(currentComputedValue))
-
-  return getPipedFunc(execFuncDatas[0])
+  return execFuncDatas.reduce((observable, currentFuncData) => {
+    // @ts-ignore
+    return pipe(getPipedFunc(currentFuncData))
+  }, from(currentComputedValue))
 }
