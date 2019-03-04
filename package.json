@@ -53,7 +53,7 @@
   },
   "lint-staged": {
     "linters": {
-      "*.{js,ts}": "yoshi lint"
+      "*.{js,ts}": "tslint src/**/*.ts"
     },
     "ignore": [
       "**/*.d.ts"

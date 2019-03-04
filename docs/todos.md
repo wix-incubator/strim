@@ -1,6 +1,6 @@
 - [ ] Find the first use case for the library (stores excel?)
 - [x] start the repo in incubator
-- [ ] remove yoshi form the project
+- [x] remove yoshi form the project
 
 Feature list with priorities:
 
