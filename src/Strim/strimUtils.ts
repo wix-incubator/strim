@@ -1,7 +1,6 @@
 import { IStrimExecFuncData, Environment, PipeItem } from '../types'
 import Strim from './Strim'
-import { from } from 'rxjs/observable/from'
-import { isObservable, of, pipe } from 'rxjs'
+import { isObservable, Observable, of } from 'rxjs'
 
 export const splitToEnvironment = (items: PipeItem[]): Strim[] => {
   return items.reduce(
@@ -25,20 +24,49 @@ export const getDefaultEnv = () => {
     : Environment.Server
 }
 
+const pipeableWrapper = (scope, func, args: any[] = []) => <T>(
+  source: Observable<T>,
+) =>
+  new Observable<T>(observer => {
+    return source.subscribe({
+      next(x) {
+        const result = func.apply(scope, [...args, x])
+
+        if (isObservable(result)){
+          result.subscribe(observer)
+        }else{
+          observer.next(result)
+        }
+      },
+      error(err) {
+        observer.error(err)
+      },
+      complete() {
+        observer.complete()
+      },
+    })
+  })
+
 export const getPipedFunc = async (execFuncData: IStrimExecFuncData) => {
   const { module, func, args } = execFuncData
 
   const src = await import(module)
-  const result = src[func].apply(src, args)
-  return isObservable(result) ? result : of(result)
+  return pipeableWrapper(src, src[func], args)
+
 }
 
-export const runStrimFuncLocally = (
+export const runStrimLocally = async (
   currentComputedValue,
   execFuncDatas: IStrimExecFuncData[],
 ) => {
-  return execFuncDatas.reduce((observable, currentFuncData) => {
+  let observable = of(currentComputedValue)
+
+  for (const execFuncData of execFuncDatas) {
+    const pipedFunc = await getPipedFunc(execFuncData)
+
     // @ts-ignore
-    return pipe(getPipedFunc(currentFuncData))
-  }, from(currentComputedValue))
+    observable = observable.pipe(pipedFunc)
+  }
+
+  return observable
 }

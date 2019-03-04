@@ -1,4 +1,4 @@
-import { Observer, Observable } from 'rxjs'
+import { Observer } from 'rxjs'
 import * as utils from './strimUtils'
 import { Environment, IStrimExecFuncData, PipeItem } from '../types'
 import { PartialObserver } from 'rxjs/src/internal/types'
@@ -34,11 +34,8 @@ export default class Strim implements IStrim {
   ): Promise<IStrim> {
     const splittedStream = utils.splitToEnvironment(this.pipeItems)
     //const environment = utils.getDefaultEnv()
-
-    const firstObservable = await utils.runStrimFuncLocally(
-      [],
-      splittedStream[0].pipeItems as IStrimExecFuncData[],
-    )
+    const firstObservable = await utils.runStrimLocally(null, splittedStream[0]
+      .pipeItems as IStrimExecFuncData[])
 
     firstObservable.subscribe(observerOrNext as PartialObserver<any>)
 
