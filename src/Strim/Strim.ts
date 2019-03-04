@@ -5,7 +5,7 @@ import { PartialObserver } from 'rxjs/src/internal/types'
 
 interface IStrim {
   pipe(strim: IStrimExecFuncData): IStrim
-  subscribe(observer: Observer<any>): IStrim
+  subscribe(observer: Observer<any>): Promise<IStrim>
   to(env: Environment): IStrim
 }
 
@@ -27,17 +27,20 @@ export default class Strim implements IStrim {
     return this
   }
 
-  public subscribe(
+  public async subscribe(
     observerOrNext?: Observer<any> | ((value: any) => void),
     error?: (error: any) => void,
     complete?: () => void,
-  ): IStrim {
+  ): Promise<IStrim> {
     const splittedStream = utils.splitToEnvironment(this.pipeItems)
-    // const environment = utils.getDefaultEnv();
+    //const environment = utils.getDefaultEnv()
 
-    // const firstObservable = utils.runStrimFuncLocally([], splittedStream[0]
-    //   .pipeItems as IStrimExecFuncData[])
-    // firstObservable.subscribe(observerOrNext as PartialObserver<any>)
+    const firstObservable = await utils.runStrimFuncLocally(
+      [],
+      splittedStream[0].pipeItems as IStrimExecFuncData[],
+    )
+
+    firstObservable.subscribe(observerOrNext as PartialObserver<any>)
 
     return this
   }

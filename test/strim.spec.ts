@@ -1,38 +1,38 @@
-import Strim from '../src/index';
+import Strim from '../src/index'
 
 describe('Strim', () => {
-  let strim: Strim;
+  let strim: Strim
 
   beforeEach(() => {
-    strim = new Strim();
-  });
+    strim = new Strim()
+  })
 
   describe('basic flow', () => {
     it('should create a new count property', done => {
-      let index = 0;
-      const arr = [1, 2, 3, 4];
+      let index = 0
+      const arr = [1, 2, 3, 4]
       strim
         .pipe({
-          module: 'observables',
+          module: '../../test/modules/globals',
           func: 'get',
-          args: arr,
+          args: [arr],
         })
         .subscribe({
           next: val => {
-            expect(val).toBe(arr[index]);
-            index++;
+            expect(val).toBe(arr[index])
+            index++
           },
           error: err => {
-            throw new Error(err);
+            throw new Error(err)
           },
           complete: () => {
-            done();
+            done()
           },
-        });
-    });
-  });
+        })
+    })
+  })
 
   // describe('client 2 client', () => {});
   // describe('server 2 server', () => {});
   // describe('client 2 server', () => {});
-});
+})

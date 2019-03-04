@@ -287,7 +287,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
 
-"@babel/plugin-syntax-dynamic-import@^7.2.0":
+"@babel/plugin-syntax-dynamic-import@^7.0.0-beta.42", "@babel/plugin-syntax-dynamic-import@^7.2.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-dynamic-import/-/plugin-syntax-dynamic-import-7.2.0.tgz#69c159ffaf4998122161ad8ebc5e6d1f55df8612"
   integrity sha512-mVxuJ0YroI/h/tbFTPGZR8cv6ai+STMKNBq0f8hFxsxWjl94qqhsb+wXbpNMDPU3cfR1TIsVFzU3nXyZMqyK4w==
@@ -1189,6 +1189,13 @@ babel-jest@^24.1.0:
     babel-preset-jest "^24.1.0"
     chalk "^2.4.2"
     slash "^2.0.0"
+
+babel-plugin-dynamic-import-node-babel-7@^2.0.7:
+  version "2.0.7"
+  resolved "https://repo.dev.wixpress.com/artifactory/api/npm/npm-repos/babel-plugin-dynamic-import-node-babel-7/-/babel-plugin-dynamic-import-node-babel-7-2.0.7.tgz#e778a8edb17488b472aa058ec451f1e75da4c0ec"
+  integrity sha1-53io7bF0iLRyqgWOxFHx512kwOw=
+  dependencies:
+    "@babel/plugin-syntax-dynamic-import" "^7.0.0-beta.42"
 
 babel-plugin-istanbul@^5.1.0:
   version "5.1.1"
