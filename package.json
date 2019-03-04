@@ -15,7 +15,7 @@
     "registry": "http://npm.dev.wixpress.com/"
   },
   "scripts": {
-    "start": "yoshi start",
+    "start": "babel-node --extensions \".ts\" test/startServer.ts",
     "precommit": "lint-staged",
     "pretest": "tsc",
     "test": "jest",
@@ -23,7 +23,9 @@
     "release": "npm publish"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.4",
+    "@babel/node": "^7.2.2",
     "@babel/plugin-proposal-class-properties": "^7.3.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.4",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
@@ -93,8 +95,6 @@
       "d.ts"
     ],
     "moduleNameMapper": {
-      "@wix/wixstores-client-core/dist/es/src/(.*)$": "<rootDir>/node_modules/@wix/wixstores-client-core/dist/src/$1",
-      "@wix/native-components-infra/dist/es/src/(.*)$": "<rootDir>/node_modules/@wix/native-components-infra/dist/src/$1",
       "!raw-loader!(.+graphql)$": "<rootDir>/src/services/$1"
     },
     "transformIgnorePatterns": [],

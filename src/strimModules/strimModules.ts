@@ -12,14 +12,16 @@ function setHealthcheck(router: express.Router) {
   })
 }
 
-function setModulesWs(router: IRouterWithWebSockets, modulesPath: string) {
+function importModules(modulesPath: string) {
   const files = fs.readdirSync(modulesPath)
   files.forEach((moduleName: string) => {
     strimModules[moduleName] = require(path.join(modulesPath, moduleName))
   })
+}
+
+function setWs(router: IRouterWithWebSockets) {
   router.ws('/', (ws, _) => {
     ws.on('message', function(msg) {
-      console.log(msg)
       // {module, func, args}
       // const res = strimModules[module][func].apply(strimModules[module], args)
       // ws.send(res);
@@ -31,7 +33,8 @@ function setModulesWs(router: IRouterWithWebSockets, modulesPath: string) {
 function getConfituredRouter(modulesPath: string) {
   const router = express.Router() as IRouterWithWebSockets
   setHealthcheck(router)
-  setModulesWs(router, modulesPath)
+  importModules(modulesPath)
+  setWs(router)
 
   return router
 }

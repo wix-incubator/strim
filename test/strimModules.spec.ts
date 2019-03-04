@@ -10,12 +10,14 @@ describe('Strim Modules', () => {
   let app: express.Application
   let server: http.Server
 
-  beforeEach(() => {
+  beforeEach(done => {
     app = express()
     app = strimModules(app, {
       modulesPath: path.resolve('test/modules'),
     })
-    server = app.listen(PORT)
+    server = app.listen(PORT, () => {
+      done()
+    })
   })
   afterEach(() => {
     server.close()
@@ -39,14 +41,24 @@ describe('Strim Modules', () => {
   describe('modules', () => {
     it('should return echo', done => {
       // start a ws to the server
-      const ws = new WebSocket(`ws://localhost:${PORT}/`)
+      const ws = new WebSocket(`ws://localhost:${PORT}/strim`)
       // send it the correct message
-      ws.onopen = function open() {
-        // console.log('connected')
-        ws.send(Date.now())
+      const clientData = Date.now()
+      ws.onopen = () => {
+        ws.send(JSON.stringify(clientData))
+      }
+
+      ws.onclose = () => {
+        done(new Error('WebSocket Disconnected'))
+      }
+
+      ws.onmessage = (res: any) => {
+        const data = JSON.parse(res.data)
+        // console.log(`Roundtrip time: ${Date.now() - res.data} ms`)
+        // expect return values
+        expect(data).toBe(clientData)
         done()
       }
-      // expect return values
     })
   })
 })
