@@ -6,7 +6,7 @@
     "sourceMap": true,
     "noImplicitAny": false,
     "module": "esNext",
-    "strict": true,
+    "strict": false,
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "esNext",

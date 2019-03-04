@@ -101,6 +101,7 @@
     "express-ws": "^4.0.0",
     "fs-extra": "^7.0.1",
     "rxjs": "^6.4.0",
+    "rxjs-compat": "^6.4.0",
     "webpack": "^4.29.6"
   },
   "optionalDependencies": {

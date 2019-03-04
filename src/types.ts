@@ -17,6 +17,8 @@ export enum Environment {
   Client,
 }
 
+export type PipeItem = IStrimExecFuncData | Environment
+
 export interface IStrim {
   pipe(strim: IStrimExecFuncData): IStrim
   subscribe(observer: Observer<any>): IStrim
