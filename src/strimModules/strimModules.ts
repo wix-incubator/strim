@@ -1,4 +1,4 @@
-import { IStrimModulesOptions } from '../types'
+import { IStrimModulesOptions, IRouterWithWebSockets } from '../types'
 import express from 'express'
 import expressWs from 'express-ws'
 import path from 'path'
@@ -7,13 +7,16 @@ import fs from 'fs-extra'
 const strimModules = {}
 
 function getRouter(modulesPath: string) {
-  const router = express.Router()
+  const router = express.Router() as IRouterWithWebSockets
   const files = fs.readdirSync(modulesPath)
   // files.map(fs.statSync)
   files.forEach((moduleName: string) => {
     strimModules[moduleName] = require(path.join(modulesPath, moduleName))
   })
-  router.ws('/', (ws, req) => {
+  router.get('/strim', (_, res) => {
+    res.send('All Good')
+  })
+  router.ws('/', (ws, _) => {
     ws.on('message', function(msg) {
       console.log(msg)
       // {module, func, args}
@@ -26,7 +29,7 @@ function getRouter(modulesPath: string) {
 }
 
 function setStrimModules(
-  app,
+  app: express.Application,
   {
     wsRoute = '/strim',
     modulesPath = path.resolve('node_modules'),

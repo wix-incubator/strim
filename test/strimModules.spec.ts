@@ -3,7 +3,7 @@ import path from 'path'
 import { strimModules } from '../src/index'
 
 describe('Strim Modules', () => {
-  let app
+  let app: express.Application
 
   beforeEach(() => {
     app = express()
