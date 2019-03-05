@@ -43,7 +43,7 @@ export default class Strim implements IStrim {
     return this
   }
 
-  public to(env: Environment): IStrim {
+  public to(env: Environment, worker: boolean = false): IStrim {
     this.lastEnv = env
     return this
   }
