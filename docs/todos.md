@@ -5,11 +5,11 @@
 Feature list with priorities:
 
 - [ ] simple echo only client
-- [ ] add piping modules
+- [x] add piping modules
 - [x] middleware for express
 - [x] simple echo only server
 - [ ] workers (client and server)
-- [ ] markdown documentation
+- [x] markdown documentation
 - [ ] example project
 - [ ] examples dir
 - [ ] paralelisem (fork + join)
