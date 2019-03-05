@@ -8,6 +8,7 @@ const clientConfig = {
   output: {
     path: path.resolve(__dirname, './dist'),
     filename: 'strim.js',
+    libraryTarget: 'umd',
   },
   module: {
     rules: [
@@ -43,9 +44,9 @@ const serverConfig = {
   resolve: {
     extensions: ['.js', '.jsx', '.ts', 'tsx', '.json'],
   },
-  externals: {
-    express: 'express',
-  },
+  // externals: {
+  //   express: 'express',
+  // },
 }
 
 module.exports = [clientConfig, serverConfig]
