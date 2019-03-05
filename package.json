@@ -14,7 +14,8 @@
   "scripts": {
     "start": "babel-node --extensions \".ts\" test/startServer.ts",
     "precommit": "lint-staged",
-    "pretest": "tsc",
+    "build": "webpack && tsc",
+    "pretest": "npm run build",
     "test": "jest",
     "posttest": "tslint src/**/*.ts",
     "release": "npm version patch && npm publish"
@@ -34,7 +35,9 @@
     "@types/jest": "^24.0.9",
     "@types/node": "^8.0.0",
     "babel-jest": "^24.1.0",
+    "babel-loader": "^8.0.5",
     "babel-plugin-dynamic-import-node-babel-7": "^2.0.7",
+    "clean-webpack-plugin": "^2.0.0",
     "jest": "^24.1.0",
     "jest-raw-loader": "^1.0.1",
     "lint-staged": "^7.2.2",
@@ -104,6 +107,7 @@
     "rxjs": "^6.4.0",
     "rxjs-compat": "^6.4.0",
     "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3",
     "ws": "^6.1.4"
   },
   "optionalDependencies": {
