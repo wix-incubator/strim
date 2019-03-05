@@ -81,13 +81,23 @@ export const getPipeableFunc = async (
 }
 
 export const convertToFullStrim = pipeableFuncsByEnvironment => {
-  let observable = of(undefined)
-  pipeableFuncsByEnvironment.forEach(environmentalPipeableFunc => {
-    environmentalPipeableFunc.forEach(pipeableFunc => {
-      observable = observable.pipe(pipeableFunc)
-    })
-    // TODO: switch environment operator
-  })
+  return pipeableFuncsByEnvironment.reduce(
+    (observable, environmentalPipeableFunc) => {
+      return environmentalPipeableFunc.reduce((subObservable, pipeableFunc) => {
+        return subObservable.pipe(pipeableFunc)
+      }, observable)
+      // TODO: switch environment operator
+    },
+    of(undefined),
+  )
 
-  return observable
+  // let observable = of(undefined)
+  // pipeableFuncsByEnvironment.forEach(environmentalPipeableFunc => {
+  //   environmentalPipeableFunc.forEach(pipeableFunc => {
+  //     observable = observable.pipe(pipeableFunc)
+  //   })
+  //   // TODO: switch environment operator
+  // })
+
+  // return observable
 }
