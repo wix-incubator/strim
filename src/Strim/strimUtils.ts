@@ -80,24 +80,8 @@ export const getPipeableFunc = async (
   return pipeableWrapper(src, src[func], args)
 }
 
-// export const runStrimLocally = async (
-//   currentComputedValue,
-//   execFuncDatas: IStrimExecFuncData[],
-// ) => {
-//   let observable = of(currentComputedValue)
-//
-//   for (const execFuncData of execFuncDatas) {
-//     const pipedFunc = await getPipedFunc(execFuncData)
-//
-//     // @ts-ignore
-//     observable = observable.pipe(pipedFunc)
-//   }
-//
-//   return observable
-// }
-
 export const convertToFullStrim = pipeableFuncsByEnvironment => {
-  let observable = of(0)
+  let observable = of(undefined)
   pipeableFuncsByEnvironment.forEach(environmentalPipeableFunc => {
     environmentalPipeableFunc.forEach(pipeableFunc => {
       observable = observable.pipe(pipeableFunc)
