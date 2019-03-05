@@ -20,7 +20,7 @@ export default class Strim implements IStrim {
   private websocketSubject: WebSocketSubject<any>
   private wsUrl: string
 
-  constructor({ wsUrl = 'ws://localhost:8081/strim' }: IStrimOptions = {}) {
+  constructor({ wsUrl = 'ws://localhost:4321/strim' }: IStrimOptions = {}) {
     this.lastEnv = utils.getDefaultEnv()
     this.wsUrl = wsUrl
   }
