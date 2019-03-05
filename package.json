@@ -17,7 +17,7 @@
     "pretest": "tsc",
     "test": "jest",
     "posttest": "tslint src/**/*.ts",
-    "release": "npm publish"
+    "release": "npm patch && npm publish"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
