@@ -42,6 +42,9 @@ const serverConfig = {
   resolve: {
     extensions: ['.js', '.jsx', '.ts', 'tsx', '.json'],
   },
+  externals: {
+    express: 'express',
+  },
 }
 
 module.exports = [clientConfig, serverConfig]
