@@ -1,27 +1,51 @@
-import { IStrimExecFuncData, Environment, PipeItem } from '../types'
+import {
+  IStrimExecFuncDataPiped,
+  Environment,
+  IStrimExecFuncDataInput,
+} from '../types'
 import Strim from './Strim'
 import { isObservable, Observable, of } from 'rxjs'
-
-export const splitToEnvironment = (items: PipeItem[]): Strim[] => {
-  return items.reduce(
-    (strims, current) => {
-      // @ts-ignore
-      if (current in Environment) {
-        strims.push(new Strim(current as Environment))
-      } else {
-        strims[strims.length - 1].pipe(current as IStrimExecFuncData)
-      }
-
-      return strims
-    },
-    [new Strim()],
-  )
-}
 
 export const getDefaultEnv = () => {
   return typeof window !== 'undefined' && typeof window.document !== 'undefined'
     ? Environment.Client
     : Environment.Server
+}
+
+export const splitToEnvironment = (
+  items: IStrimExecFuncDataPiped[],
+): IStrimExecFuncDataPiped[][] => {
+  return items.reduce((splittedItems, currentItem) => {
+    const lastItem =
+      splittedItems[splittedItems.length - 1] &&
+      splittedItems[splittedItems.length - 1][0]
+
+    if (!lastItem || currentItem.env !== lastItem.env) {
+      splittedItems.push([currentItem])
+    } else {
+      splittedItems[splittedItems.length - 1].push(currentItem)
+    }
+
+    return splittedItems
+  }, [])
+}
+
+export const convertToPipeableFuncs = async (
+  pipeItemsByEnvironment: IStrimExecFuncDataPiped[][],
+) => {
+  const pipeableFuncsByEnvironment = []
+
+  for (const environmentalItems of pipeItemsByEnvironment) {
+    const environmentalPipeableFunc = []
+
+    for (const item of environmentalItems) {
+      environmentalPipeableFunc.push(await getPipeableFunc(item))
+    }
+
+    pipeableFuncsByEnvironment.push(environmentalPipeableFunc)
+  }
+
+  return pipeableFuncsByEnvironment
 }
 
 const pipeableWrapper = (scope, func, args: any[] = []) => <T>(
@@ -32,9 +56,9 @@ const pipeableWrapper = (scope, func, args: any[] = []) => <T>(
       next(x) {
         const result = func.apply(scope, [...args, x])
 
-        if (isObservable(result)){
+        if (isObservable(result)) {
           result.subscribe(observer)
-        }else{
+        } else {
           observer.next(result)
         }
       },
@@ -47,26 +71,39 @@ const pipeableWrapper = (scope, func, args: any[] = []) => <T>(
     })
   })
 
-export const getPipedFunc = async (execFuncData: IStrimExecFuncData) => {
+export const getPipeableFunc = async (
+  execFuncData: IStrimExecFuncDataPiped,
+) => {
   const { module, func, args } = execFuncData
 
   const src = await import(module)
   return pipeableWrapper(src, src[func], args)
-
 }
 
-export const runStrimLocally = async (
-  currentComputedValue,
-  execFuncDatas: IStrimExecFuncData[],
-) => {
-  let observable = of(currentComputedValue)
+// export const runStrimLocally = async (
+//   currentComputedValue,
+//   execFuncDatas: IStrimExecFuncData[],
+// ) => {
+//   let observable = of(currentComputedValue)
+//
+//   for (const execFuncData of execFuncDatas) {
+//     const pipedFunc = await getPipedFunc(execFuncData)
+//
+//     // @ts-ignore
+//     observable = observable.pipe(pipedFunc)
+//   }
+//
+//   return observable
+// }
 
-  for (const execFuncData of execFuncDatas) {
-    const pipedFunc = await getPipedFunc(execFuncData)
-
-    // @ts-ignore
-    observable = observable.pipe(pipedFunc)
-  }
+export const convertToFullStrim = pipeableFuncsByEnvironment => {
+  let observable = of(0)
+  pipeableFuncsByEnvironment.forEach(environmentalPipeableFunc => {
+    environmentalPipeableFunc.forEach(pipeableFunc => {
+      observable = observable.pipe(pipeableFunc)
+    })
+    // TODO: switch environment operator
+  })
 
   return observable
 }

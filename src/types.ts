@@ -1,10 +1,23 @@
 import { Observer } from 'rxjs'
 import express from 'express'
 
-export interface IStrimExecFuncData {
+export enum Environment {
+  Server,
+  Client,
+}
+
+export interface IBaseStrimExecFuncData {
   module: string
   func: string
   args?: any
+}
+
+export interface IStrimExecFuncDataInput extends IBaseStrimExecFuncData {
+  env?: Environment
+}
+
+export interface IStrimExecFuncDataPiped extends IBaseStrimExecFuncData {
+  env: Environment
 }
 
 export interface IStrimModulesOptions {
@@ -12,15 +25,10 @@ export interface IStrimModulesOptions {
   modulesPath?: string
 }
 
-export enum Environment {
-  Server,
-  Client,
-}
-
-export type PipeItem = IStrimExecFuncData | Environment
+//export type PipeItem = IStrimExecFuncData | Environment
 
 export interface IStrim {
-  pipe(strim: IStrimExecFuncData): IStrim
+  pipe(strim: IStrimExecFuncDataInput): IStrim
   subscribe(observer: Observer<any>): IStrim
   to(env: Environment): IStrim
 }
