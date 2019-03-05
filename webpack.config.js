@@ -4,6 +4,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 const clientConfig = {
   entry: './src/Strim/Strim.ts',
+  target: 'web',
   output: {
     path: path.resolve(__dirname, './dist'),
     filename: 'strim.js',
