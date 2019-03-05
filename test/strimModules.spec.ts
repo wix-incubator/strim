@@ -2,7 +2,7 @@ import http from 'http'
 import express from 'express'
 import path from 'path'
 import WebSocket from 'isomorphic-ws'
-import { strimModules } from '../src/index'
+import { setStrimModules } from '../src/index'
 
 const PORT = 4321
 
@@ -12,7 +12,7 @@ describe('Strim Modules', () => {
 
   beforeEach(done => {
     app = express()
-    app = strimModules(app, {
+    app = setStrimModules(app, {
       modulesPath: path.resolve('test/modules'),
     })
     server = app.listen(PORT, () => {
@@ -31,7 +31,7 @@ describe('Strim Modules', () => {
     it('should throw error when module dir is not there', () => {
       app = express()
       expect(() => {
-        strimModules(app, {
+        setStrimModules(app, {
           modulesPath: path.resolve('test/nomodules'),
         })
       }).toThrowError('ENOENT: no such file or directory')

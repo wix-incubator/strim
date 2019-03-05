@@ -75,7 +75,7 @@ The core class which activates the `strim` flow
 * __onComplete__: callback function that will occur the strim is complete.
 
 
-### strimModules(app, options)
+### setStrimModules(app, options)
 * __app__: The Express application to set up `strim` on.
 * __options__ (*Optional*): An object containing further options.
   * __wsRoute__ (*Default `'/strim'`*): The route path for `strim`'s endpoint.

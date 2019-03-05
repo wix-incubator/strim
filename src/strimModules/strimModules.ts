@@ -39,7 +39,7 @@ function getConfituredRouter(modulesPath: string) {
   return router
 }
 
-function setStrimModules(
+export function setStrimModules(
   app: express.Application,
   {
     wsRoute = '/strim',
@@ -50,5 +50,3 @@ function setStrimModules(
   app.use(wsRoute, getConfituredRouter(modulesPath))
   return app
 }
-
-export default setStrimModules

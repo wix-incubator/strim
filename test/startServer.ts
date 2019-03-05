@@ -1,11 +1,11 @@
 import express from 'express'
 import path from 'path'
-import { strimModules } from '../src/index'
+import { setStrimModules } from '../src/index'
 
 const PORT = 4321
 
 const app = express()
-strimModules(app, {
+setStrimModules(app, {
   modulesPath: path.resolve('test/modules'),
 })
 app.listen(PORT, () => {
