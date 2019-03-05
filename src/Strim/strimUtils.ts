@@ -5,6 +5,7 @@ import {
 } from '../types'
 import Strim from './Strim'
 import { isObservable, Observable, of } from 'rxjs'
+import { WebSocketSubject } from 'rxjs/webSocket'
 
 export const getDefaultEnv = () => {
   return typeof window !== 'undefined' && typeof window.document !== 'undefined'
@@ -32,11 +33,11 @@ export const splitToEnvironment = (
 
 export const convertToPipeableFuncs = async (
   pipeItemsByEnvironment: IStrimExecFuncDataPiped[][],
-) => {
-  const pipeableFuncsByEnvironment = []
+): Promise<[[any?]?]> => {
+  const pipeableFuncsByEnvironment: [[any?]?] = []
 
   for (const environmentalItems of pipeItemsByEnvironment) {
-    const environmentalPipeableFunc = []
+    const environmentalPipeableFunc: [any?] = []
 
     for (const item of environmentalItems) {
       environmentalPipeableFunc.push(await getPipeableFunc(item))
@@ -80,12 +81,20 @@ export const getPipeableFunc = async (
   return pipeableWrapper(src, src[func], args)
 }
 
-export const convertToFullStrim = pipeableFuncsByEnvironment => {
+export const convertToFullStrim = (
+  pipeableFuncsByEnvironment: [[any?]?],
+  webSocketSubject?: WebSocketSubject<any>,
+) => {
   return pipeableFuncsByEnvironment.reduce(
-    (observable, environmentalPipeableFunc) => {
+    (observable, environmentalPipeableFunc, envIndex) => {
+      let fullStrim = observable
+      if (envIndex !== 0) {
+        fullStrim = observable
+      }
+
       return environmentalPipeableFunc.reduce((subObservable, pipeableFunc) => {
         return subObservable.pipe(pipeableFunc)
-      }, observable)
+      }, fullStrim)
       // TODO: switch environment operator
     },
     of(undefined),

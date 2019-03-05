@@ -1,4 +1,5 @@
 import { Observer } from 'rxjs'
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import * as utils from './strimUtils'
 import {
   Environment,
@@ -15,6 +16,7 @@ interface IStrim {
 export default class Strim implements IStrim {
   private pipeItems: IStrimExecFuncDataPiped[] = []
   private lastEnv: Environment
+  private websocketSubject: WebSocketSubject<any>
 
   constructor() {
     this.lastEnv = utils.getDefaultEnv()
@@ -31,13 +33,16 @@ export default class Strim implements IStrim {
   }
 
   public to(env: Environment): IStrim {
+    if (env === Environment.Server && this.lastEnv === Environment.Client) {
+      this.websocketSubject = webSocket('ws://localhost:8081')
+    }
     this.lastEnv = env
     return this
   }
 
   public async subscribe(
-    observerOrNext?: Observer<any> | ((value: any) => void),
-    error?: (error: any) => void,
+    observerOrNext: Observer<any> | ((value: any) => void) = console.log,
+    error: (error: any) => void = console.error,
     complete?: () => void,
   ): Promise<IStrim> {
     const pipeItemsByEnvironment = utils.splitToEnvironment(this.pipeItems)
@@ -46,7 +51,10 @@ export default class Strim implements IStrim {
       pipeItemsByEnvironment,
     )
 
-    const fullStrim = utils.convertToFullStrim(pipeableFuncsByEnvironment)
+    const fullStrim = utils.convertToFullStrim(
+      pipeableFuncsByEnvironment,
+      this.websocketSubject,
+    )
 
     // @ts-ignore
     fullStrim.subscribe(observerOrNext, error, complete)

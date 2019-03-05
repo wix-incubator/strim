@@ -4,11 +4,11 @@ Streaming Transports Relay Isomorphic Modules
 
 ## Installation
 
-`npm i -S @wix/strim`
+`npm i -S strim-js`
 
 or
 
-`yarn add @wix/strim`
+`yarn add strim-js`
 
 ## Usage
 Write a module in your modules directory
@@ -60,12 +60,15 @@ new Strim()
 The core class which activates the `strim` flow
 #### Strim instance public methods
 ##### pipe(options)
-* __module__ (*Defalut `'global'`*): The module name that will be imported for use of the pipe.
-* __func__ (*Defalut `'default'`*): The function name within the module.:
+* __module__ (*Default `'global'`*): The module name that will be imported for use of the pipe.
+* __func__ (*Default `'default'`*): The function name within the module.:
+* __env__ (*Default `last func's environment`*): The environment in which we want the function to run in (can be `Environment.Client` or `Environment.Server`).:
 * __args__: arguments that will be sent to the piped function.
 
-##### subscribe(options)
-* __subscribe__:
+##### subscribe(onNext, onError, onComplete)
+* __onNext__ (*Default `console.log`*): callback function that will occur every time a new value is received.
+* __onError__ (*Default `console.error`*): callback function that will occur when an error is received.
+* __onComplete__: callback function that will occur the strim is complete.
 
 
 ### strimModules(app, options)
