@@ -5,7 +5,6 @@ import {
   IStrimExecFuncDataPiped,
   IStrimExecFuncDataInput,
 } from '../types'
-import { PartialObserver } from 'rxjs/src/internal/types'
 
 interface IStrim {
   pipe(strim: IStrimExecFuncDataInput): IStrim
@@ -15,16 +14,16 @@ interface IStrim {
 
 export default class Strim implements IStrim {
   private pipeItems: IStrimExecFuncDataPiped[] = []
-  private env: Environment
+  private lastEnv: Environment
 
   constructor() {
-    this.env = utils.getDefaultEnv()
+    this.lastEnv = utils.getDefaultEnv()
   }
 
   public pipe(strim: IStrimExecFuncDataInput): IStrim {
     const pipeItem: IStrimExecFuncDataPiped = {
       ...strim,
-      env: strim.env ? strim.env : utils.getDefaultEnv(),
+      env: strim.env ? strim.env : this.lastEnv,
     }
 
     this.pipeItems.push(pipeItem)
@@ -32,7 +31,7 @@ export default class Strim implements IStrim {
   }
 
   public to(env: Environment): IStrim {
-    this.env = env
+    this.lastEnv = env
     return this
   }
 
@@ -48,9 +47,6 @@ export default class Strim implements IStrim {
     )
 
     const fullStrim = utils.convertToFullStrim(pipeableFuncsByEnvironment)
-
-    // const firstObservable = await utils.runStrimLocally(null, environmentsStrims[0]
-    //   .pipeItems as IStrimExecFuncData[])
 
     // @ts-ignore
     fullStrim.subscribe(observerOrNext, error, complete)
