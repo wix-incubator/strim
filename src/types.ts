@@ -25,6 +25,10 @@ export interface IStrimModulesOptions {
   modulesPath?: string
 }
 
+export interface IStrimOptions {
+  wsUrl?: string
+}
+
 //export type PipeItem = IStrimExecFuncData | Environment
 
 export interface IStrim {

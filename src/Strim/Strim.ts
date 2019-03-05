@@ -5,6 +5,7 @@ import {
   Environment,
   IStrimExecFuncDataPiped,
   IStrimExecFuncDataInput,
+  IStrimOptions,
 } from '../types'
 
 interface IStrim {
@@ -17,9 +18,11 @@ export default class Strim implements IStrim {
   private pipeItems: IStrimExecFuncDataPiped[] = []
   private lastEnv: Environment
   private websocketSubject: WebSocketSubject<any>
+  private wsUrl: string
 
-  constructor() {
+  constructor({ wsUrl = 'ws://localhost:8081/strim' }: IStrimOptions = {}) {
     this.lastEnv = utils.getDefaultEnv()
+    this.wsUrl = wsUrl
   }
 
   public pipe(strim: IStrimExecFuncDataInput): IStrim {
@@ -28,14 +31,19 @@ export default class Strim implements IStrim {
       env: strim.env ? strim.env : this.lastEnv,
     }
 
+    if (
+      pipeItem.env === Environment.Server &&
+      this.lastEnv === Environment.Client
+    ) {
+      this.websocketSubject = webSocket(this.wsUrl)
+    }
+
+    this.lastEnv = pipeItem.env
     this.pipeItems.push(pipeItem)
     return this
   }
 
   public to(env: Environment): IStrim {
-    if (env === Environment.Server && this.lastEnv === Environment.Client) {
-      this.websocketSubject = webSocket('ws://localhost:8081')
-    }
     this.lastEnv = env
     return this
   }

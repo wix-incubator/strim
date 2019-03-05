@@ -59,11 +59,15 @@ new Strim()
 ### Strim
 The core class which activates the `strim` flow
 #### Strim instance public methods
+##### constructor(options)
+* __options__: An object containing general `strim` options.
+  * __wsUrl__ (*Default `'ws://localhost:4321/strim'`*): The websocket url.:
 ##### pipe(options)
-* __module__ (*Default `'global'`*): The module name that will be imported for use of the pipe.
-* __func__ (*Default `'default'`*): The function name within the module.:
-* __env__ (*Default `last func's environment`*): The environment in which we want the function to run in (can be `Environment.Client` or `Environment.Server`).:
-* __args__: arguments that will be sent to the piped function.
+* __options__: An object containing piped function options.
+  * __module__ (*Default `'global'`*): The module name that will be imported for use of the pipe.
+  * __func__ (*Default `'default'`*): The function name within the module.:
+  * __env__ (*Default `last func's environment`*): The environment in which we want the function to run in (can be `Environment.Client` or `Environment.Server`).:
+  * __args__: arguments that will be sent to the piped function.
 
 ##### subscribe(onNext, onError, onComplete)
 * __onNext__ (*Default `console.log`*): callback function that will occur every time a new value is received.
