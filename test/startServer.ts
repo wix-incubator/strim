@@ -6,7 +6,7 @@ const PORT = 4321
 
 const app = express()
 setStrimModules(app, {
-  modulesPath: path.resolve('test/modules'),
+  modulesPath: 'test/modules',
 })
 app.listen(PORT, () => {
   console.log(`Server started: http://localhost:${PORT}`)
