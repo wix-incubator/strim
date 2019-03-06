@@ -81,7 +81,6 @@ function createClientBundle(modulesPath) {
   const bundleEntries = getModulesEntriesToBundle(modulesPath)
 
   const virtualEntriesfile = createModulesEntriesFile(bundleEntries)
-  console.log(virtualEntriesfile)
   return bundleModules(virtualEntriesfile)
 }
 

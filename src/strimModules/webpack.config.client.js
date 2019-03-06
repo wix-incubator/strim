@@ -24,7 +24,7 @@ function getClientConfig(content) {
       ],
     },
     plugins: [
-      //new CleanWebpackPlugin(),
+      new CleanWebpackPlugin(),
       new VirtualModulePlugin({
         moduleName: './clientBundle.js',
         contents: content,
