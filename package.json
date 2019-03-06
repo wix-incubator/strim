@@ -37,7 +37,6 @@
     "babel-jest": "^24.1.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-dynamic-import-node-babel-7": "^2.0.7",
-    "clean-webpack-plugin": "^2.0.0",
     "copy-webpack-plugin": "^5.0.0",
     "express": "^4.16.4",
     "jest": "^24.1.0",
@@ -104,8 +103,8 @@
     "testURL": "http://localhost:5554"
   },
   "dependencies": {
+    "clean-webpack-plugin": "^2.0.0",
     "express-ws": "^4.0.0",
-    "fs-extra": "^7.0.1",
     "isomorphic-ws": "^4.0.1",
     "rxjs": "^6.4.0",
     "rxjs-compat": "^6.4.0",

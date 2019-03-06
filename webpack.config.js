@@ -24,7 +24,10 @@ const clientConfig = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new CopyPlugin(['src/strimModules/strimModules.js']),
+    new CopyPlugin([
+      'src/strimModules/strimModules.js',
+      'src/strimModules/webpack.config.client.js',
+    ]),
   ],
   resolve: {
     extensions: ['.js', '.jsx', '.ts', 'tsx', '.json'],
