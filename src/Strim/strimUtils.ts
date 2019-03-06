@@ -1,16 +1,16 @@
-import {
-  IStrimExecFuncDataPiped,
-  Environment,
-  IStrimExecFuncDataInput,
-} from '../types'
-import Strim from './Strim'
+import { IStrimExecFuncDataPiped, Environment } from '../types'
 import { isObservable, Observable, of } from 'rxjs'
 import { WebSocketSubject } from 'rxjs/webSocket'
 
+export const isBrowser = new Function(
+  'try {return this===window;}catch(e){ return false;}',
+)
+export const isNode = new Function(
+  'try {return this===global;}catch(e){return false;}',
+)
+
 export const getDefaultEnv = () => {
-  return typeof window !== 'undefined' && typeof window.document !== 'undefined'
-    ? Environment.Client
-    : Environment.Server
+  return isBrowser() ? Environment.Client : Environment.Server
 }
 
 export const splitToEnvironment = (

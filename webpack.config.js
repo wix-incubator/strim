@@ -7,6 +7,7 @@ const nodeExternals = require('webpack-node-externals')
 const clientConfig = {
   entry: './src/Strim/Strim.ts',
   target: 'web',
+  mode: 'production',
   output: {
     path: path.resolve(__dirname, './dist'),
     filename: 'strim.js',
