@@ -10,7 +10,7 @@ function getClientConfig(content) {
     entry: './clientBundle.js',
     target: 'web',
     output: {
-      path: path.resolve(__dirname, '../../dist/client'),
+      path: path.resolve(process.cwd(), 'dist/client'),
       filename: STRIM_CLIENT_BUNDLE_FILE_PATH,
     },
     mode: 'production',
