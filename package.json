@@ -51,7 +51,8 @@
     "tslint-microsoft-contrib": "^6.0.0",
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.3.3333",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-node-externals": "^1.7.2",
+    "express": "^4.16.4"
   },
   "lint-staged": {
     "linters": {
@@ -110,7 +111,6 @@
     "rxjs-compat": "^6.4.0",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3",
-    "ws": "^6.1.4",
-    "express": "^4.16.4"
+    "ws": "^6.1.4"
   }
 }
