@@ -13,7 +13,7 @@ describe('Strim Modules', () => {
   beforeEach(done => {
     app = express()
     app = setStrimModules(app, {
-      modulesPath: path.resolve('test/modules'),
+      modulesPath: 'test/modules',
     })
     server = app.listen(PORT, () => {
       done()
@@ -32,7 +32,7 @@ describe('Strim Modules', () => {
       app = express()
       expect(() => {
         setStrimModules(app, {
-          modulesPath: path.resolve('test/nomodules'),
+          modulesPath: 'test/nomodules',
         })
       }).toThrowError('ENOENT: no such file or directory')
     })
