@@ -14,6 +14,15 @@ interface IStrim {
   to(env: Environment): IStrim
 }
 
+function addScript(src: string) {
+  const head = document.getElementsByTagName('head')[0]
+  const script = document.createElement('script')
+  script.type = 'text/javascript'
+  script.src = src
+  head.appendChild(script)
+}
+addScript('/strim/strim.js')
+
 export default class Strim implements IStrim {
   private pipeItems: IStrimExecFuncDataPiped[] = []
   private lastEnv: Environment

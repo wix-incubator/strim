@@ -77,8 +77,14 @@ export const getPipeableFunc = async (
 ) => {
   const { module, func, args } = execFuncData
 
-  const src = await import(module)
-  return pipeableWrapper(src, src[func], args)
+  if (isBrowser()) {
+    // @ts-ignore
+    const clientModule = window.strimClientModules[module]
+    return pipeableWrapper(clientModule, clientModule[func], args)
+  } else {
+    const src = await import(module)
+    return pipeableWrapper(src, src[func], args)
+  }
 }
 
 export const convertToFullStrim = (
@@ -99,14 +105,4 @@ export const convertToFullStrim = (
     },
     of(undefined),
   )
-
-  // let observable = of(undefined)
-  // pipeableFuncsByEnvironment.forEach(environmentalPipeableFunc => {
-  //   environmentalPipeableFunc.forEach(pipeableFunc => {
-  //     observable = observable.pipe(pipeableFunc)
-  //   })
-  //   // TODO: switch environment operator
-  // })
-
-  // return observable
 }
