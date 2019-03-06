@@ -14,6 +14,13 @@ interface IStrim {
   to(env: Environment): IStrim
 }
 
+const isBrowser = new Function(
+  'try {return this===window;}catch(e){ return false;}',
+)
+const isNode = new Function(
+  'try {return this===global;}catch(e){return false;}',
+)
+
 export default class Strim implements IStrim {
   private pipeItems: IStrimExecFuncDataPiped[] = []
   private lastEnv: Environment
