@@ -2,6 +2,7 @@ import { IStrimExecFuncDataPiped, Environment } from '../types'
 import { isObservable, Observable, of } from 'rxjs'
 import { WebSocketSubject } from 'rxjs/webSocket'
 
+// @ts-ignore
 export const isBrowser = () => typeof __webpack_require__ === 'function'
 // export const isNode = () =>
 
@@ -95,6 +96,7 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
 
     return source.subscribe({
       next(x) {
+        console.log('wsSubscriber.next:', x)
         wsSubscriber.next(x)
       },
       error(err) {
