@@ -19,6 +19,12 @@ Write a module in your modules directory
 Server side (only if you need to run some of your modules on the server)
 ```js
 // server.js
+const express = require('express')
+const { setStrimModules } = require('strim-js/dist/strimModules');
+
+const app = express()
+setStrimModules(app, { modulesPath: './myStrimModules' });
+
 ```
 
 Client side
@@ -29,7 +35,7 @@ Client side
 ### Full Example
 
 ```js
-import Strim from '@wix/strim'
+import Strim from 'strim-js'
 
 new Strim()
   .pipe({
