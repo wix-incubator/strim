@@ -41,7 +41,7 @@ describe('Strim Modules', () => {
   describe('modules', () => {
     it('should return echo', done => {
       // start a ws to the server
-      const ws = new WebSocket(`ws://localhost:${PORT}/strim`)
+      const ws = new WebSocket(`ws://localhost:${PORT}/strim/ws`)
       // send it the correct message
       const clientData = Date.now()
       ws.onopen = () => {

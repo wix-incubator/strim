@@ -32,7 +32,7 @@ export default class Strim implements IStrim {
   private wsUrl: string
   private ws: any
 
-  constructor({ wsUrl = 'ws://localhost:4321/strim' }: IStrimOptions = {}) {
+  constructor({ wsUrl = 'ws://localhost:4321/strim/ws' }: IStrimOptions = {}) {
     this.lastEnv = utils.getDefaultEnv()
     this.wsUrl = wsUrl
   }

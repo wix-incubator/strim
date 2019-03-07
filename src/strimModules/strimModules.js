@@ -110,8 +110,9 @@ function importModules(modulesPath) {
 }
 
 function setWs(router) {
-  router.ws('/', (ws, _) => {
+  router.ws('/ws', (ws, _) => {
     ws.on('message', function(msg) {
+      console.log(msg);
       // {module, func, args}
       // const res = strimModules[module][func].apply(strimModules[module], args)
       // ws.send(res);
@@ -126,9 +127,7 @@ function getConfituredRouter(modulesPath) {
   importModules(modulesPath)
   setWs(router)
 
-  strimClientBundlePromise = createClientBundle(modulesPath).catch(
-    console.error,
-  )
+  strimClientBundlePromise = createClientBundle(modulesPath).catch(console.error)
   setBundleEndpoint(router)
   return router
 }
