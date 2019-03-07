@@ -79,7 +79,7 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
 ) => {
   const pipeItemsKey = hash(pipeItems)
   const wsObservable = wsSubject.multiplex(
-    () => JSON.stringify({ subscribe: pipeItems }),
+    () => JSON.stringify({ subscribe: pipeItemsKey, pipeItems }),
     () => JSON.stringify({ unsubscribe: pipeItemsKey }),
     message => message.type === pipeItemsKey,
   )
@@ -92,11 +92,11 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
     )
 
     return source.subscribe(
-      wsSubscriber.next,
-      wsSubscriber.error,
+      (x) => wsSubject.next(JSON.stringify(x)),
+      wsSubject.error,
       () => {
-        wsSubscriber.unsubscribe()
-        wsSubscriber.complete()
+        // wsSubscriber.unsubscribe()
+        // return wsSubject.complete()
       },
     )
   })

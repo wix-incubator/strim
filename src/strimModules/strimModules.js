@@ -117,9 +117,9 @@ function setWs(router) {
     ws.on('message', function(msg) {
       console.log(msg);
       const strimFuncs = JSON.parse(JSON.parse(msg))
-      console.log(strimFuncs.subscribe);
+      console.log(strimFuncs.pipeItems);
       if (strimFuncs.subscribe) {
-        strimMaps.set(hash(strimFuncs.subscribe), strimFuncs)
+        strimMaps.set(strimFuncs.subscribe, strimFuncs)
         // const strim = strimFuncs.reduce((accStrim, strimFunc) => {
         //   accStrim.pipe(strimFunc)
         // },new Strim())
