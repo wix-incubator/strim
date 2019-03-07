@@ -2,10 +2,8 @@ import { IStrimExecFuncDataPiped, Environment } from '../types'
 import { isObservable, Observable, of } from 'rxjs'
 import { WebSocketSubject } from 'rxjs/webSocket'
 
-export const isBrowser = () => !isNode()
-export const isNode = new Function(
-  'return typeof module !== \'undefined\' && module.exports',
-)
+export const isBrowser = () => typeof __webpack_require__ === 'function'
+// export const isNode = () =>
 
 export const getDefaultEnv = () => {
   return isBrowser() ? Environment.Client : Environment.Server
