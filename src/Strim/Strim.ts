@@ -1,10 +1,10 @@
 import { Observer } from 'rxjs'
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket'
+import { webSocket } from 'rxjs/webSocket'
 import * as utils from './strimUtils'
 import {
   Environment,
-  IStrimExecFuncDataPiped,
   IStrimExecFuncDataInput,
+  IStrimExecFuncDataPiped,
   IStrimOptions,
 } from '../types'
 
@@ -26,8 +26,9 @@ addScript('/strim/strim.js')
 export default class Strim implements IStrim {
   private pipeItems: IStrimExecFuncDataPiped[] = []
   private lastEnv: Environment
-  private websocketSubject: WebSocketSubject<any>
+  //private websocketSubject: WebSocketSubject<any>
   private wsUrl: string
+  private ws: any
 
   constructor({ wsUrl = 'ws://localhost:4321/strim' }: IStrimOptions = {}) {
     this.lastEnv = utils.getDefaultEnv()
@@ -40,13 +41,6 @@ export default class Strim implements IStrim {
       env: strim.env ? strim.env : this.lastEnv,
     }
 
-    if (
-      pipeItem.env === Environment.Server &&
-      this.lastEnv === Environment.Client
-    ) {
-      this.websocketSubject = webSocket(this.wsUrl)
-    }
-
     this.lastEnv = pipeItem.env
     this.pipeItems.push(pipeItem)
     return this
@@ -54,6 +48,10 @@ export default class Strim implements IStrim {
 
   public to(env: Environment, worker: boolean = false): IStrim {
     this.lastEnv = env
+    if (!this.ws && env === Environment.Server) {
+      // @ts-ignore
+      this.ws = webSocket({ url: this.wsUrl })
+    }
     return this
   }
 
@@ -70,7 +68,7 @@ export default class Strim implements IStrim {
 
     const fullStrim = utils.convertToFullStrim(
       pipeableFuncsByEnvironment,
-      this.websocketSubject,
+      this.ws,
     )
 
     // @ts-ignore

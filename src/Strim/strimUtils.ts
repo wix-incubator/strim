@@ -72,6 +72,46 @@ const pipeableWrapper = (scope, func, args: any[] = []) => <T>(
     })
   })
 
+const hash = obj => JSON.stringify(obj)
+
+const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
+  source: Observable<T>,
+) => {
+  const pipeItemsKey = hash(pipeItems)
+  const wsObservable = wsSubject.multiplex(
+    () => JSON.stringify({ subscribe: pipeItems }),
+    () => JSON.stringify({ unsubscribe: pipeItemsKey }),
+    message => message.type === pipeItemsKey,
+  )
+
+  return new Observable<T>(observer => {
+    const wsSubscriber = wsObservable.subscribe({
+      next(x) {
+        observer.next(x)
+      },
+      error(err) {
+        observer.error(err)
+      },
+      complete() {
+        observer.complete()
+      },
+    })
+
+    return source.subscribe({
+      next(x) {
+        wsSubscriber.next(x)
+      },
+      error(err) {
+        wsSubscriber.error(err)
+      },
+      complete() {
+        wsSubscriber.unsubscribe()
+        wsSubscriber.complete()
+      },
+    })
+  })
+}
+
 export const getPipeableFunc = async (
   execFuncData: IStrimExecFuncDataPiped,
 ) => {
@@ -93,14 +133,18 @@ export const convertToFullStrim = (
 ) => {
   return pipeableFuncsByEnvironment.reduce(
     (observable, environmentalPipeableFunc, envIndex) => {
-      let fullStrim = observable
-      if (envIndex !== 0) {
-        fullStrim = observable
+      if (
+        envIndex !== 0 &&
+        environmentalPipeableFunc[0].env !== Environment.Client
+      ) {
+        return observable.pipe(
+          pipeableWsBridge(webSocketSubject, environmentalPipeableFunc),
+        )
       }
 
       return environmentalPipeableFunc.reduce((subObservable, pipeableFunc) => {
         return subObservable.pipe(pipeableFunc)
-      }, fullStrim)
+      }, observable)
       // TODO: switch environment operator
     },
     of(undefined),
