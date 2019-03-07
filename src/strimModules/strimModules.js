@@ -87,7 +87,13 @@ function createClientBundle(modulesPath) {
 function setBundleEndpoint(router) {
   router.get('/strim.js', (_, res) => {
     strimClientBundlePromise.then(() => {
-      res.sendFile(path.resolve('dist/client', STRIM_CLIENT_BUNDLE_FILE_PATH))
+      res.sendFile(
+        path.resolve(
+          process.cwd(),
+          'dist/client',
+          STRIM_CLIENT_BUNDLE_FILE_PATH,
+        ),
+      )
     })
   })
 }
