@@ -21,7 +21,9 @@ function addScript(src: string) {
   script.src = src
   head.appendChild(script)
 }
-addScript('/strim/strim.js')
+if (utils.isBrowser()) {
+  addScript('/strim/strim.js')
+}
 
 export default class Strim implements IStrim {
   private pipeItems: IStrimExecFuncDataPiped[] = []
