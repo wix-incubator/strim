@@ -1,6 +1,7 @@
 import { IStrimExecFuncDataPiped, Environment } from '../types'
 import { isObservable, Observable, of } from 'rxjs'
 import { WebSocketSubject } from 'rxjs/webSocket'
+import hash from 'object-hash'
 
 // @ts-ignore
 export const isBrowser = () => typeof __webpack_require__ === 'function'
@@ -37,7 +38,11 @@ export const convertToPipeableFuncs = async (
     const environmentalPipeableFunc: [any?] = []
 
     for (const item of environmentalItems) {
-      environmentalPipeableFunc.push(await getPipeableFunc(item))
+      if (environmentalItems[0].env===Environment.Client) {
+        environmentalPipeableFunc.push(await getPipeableFunc(item))
+      } else {
+        environmentalPipeableFunc.push(item)
+      }
     }
 
     pipeableFuncsByEnvironment.push(environmentalPipeableFunc)
@@ -69,8 +74,6 @@ const pipeableWrapper = (scope, func, args: any[] = []) => <T>(
     })
   })
 
-const hash = obj => JSON.stringify(obj)
-
 const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
   source: Observable<T>,
 ) => {
@@ -82,31 +85,20 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
   )
 
   return new Observable<T>(observer => {
-    const wsSubscriber = wsObservable.subscribe({
-      next(x) {
-        observer.next(x)
-      },
-      error(err) {
-        observer.error(err)
-      },
-      complete() {
-        observer.complete()
-      },
-    })
+    const wsSubscriber = wsObservable.subscribe(
+      observer.next,
+      observer.error,
+      observer.complete,
+    )
 
-    return source.subscribe({
-      next(x) {
-        console.log('wsSubscriber.next:', x)
-        wsSubscriber.next(x)
-      },
-      error(err) {
-        wsSubscriber.error(err)
-      },
-      complete() {
+    return source.subscribe(
+      wsSubscriber.next,
+      wsSubscriber.error,
+      () => {
         wsSubscriber.unsubscribe()
         wsSubscriber.complete()
       },
-    })
+    )
   })
 }
 

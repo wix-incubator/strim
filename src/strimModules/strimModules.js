@@ -3,6 +3,8 @@ const expressWs = require('express-ws')
 const path = require('path')
 const fs = require('fs')
 const webpack = require('webpack')
+const hash = require('object-hash')
+
 const {
   STRIM_CLIENT_BUNDLE_FILE_PATH,
   getClientConfig,
@@ -109,14 +111,32 @@ function importModules(modulesPath) {
   })
 }
 
+const strimMaps = new Map()
 function setWs(router) {
   router.ws('/ws', (ws, _) => {
     ws.on('message', function(msg) {
-      console.log(msg);
+      const strimFuncs = JSON.parse(msg)
+      if (!strimFuncs.type) {
+        strimMaps.set(hash(strimFuncs), strimFuncs)
+        // const strim = strimFuncs.reduce((accStrim, strimFunc) => {
+        //   accStrim.pipe(strimFunc)
+        // },new Strim())
+        // strim.subscribe((val)=>{
+        //   ws.send(val)
+        // },(err)=>{
+        //   ws.send({err})
+        // },()=>{
+        //   ws.send(JSON.stringify({unsubscribe:'unsubscribe'}))
+        // })
+      } else {
+        console.log(strimFuncs.type);
+      }
+
+
       // {module, func, args}
       // const res = strimModules[module][func].apply(strimModules[module], args)
       // ws.send(res);
-      ws.send(msg)
+      // ws.send(msg)
     })
   })
 }
