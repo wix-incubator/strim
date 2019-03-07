@@ -115,9 +115,11 @@ const strimMaps = new Map()
 function setWs(router) {
   router.ws('/ws', (ws, _) => {
     ws.on('message', function(msg) {
-      const strimFuncs = JSON.parse(msg)
-      if (!strimFuncs.type) {
-        strimMaps.set(hash(strimFuncs), strimFuncs)
+      console.log(msg);
+      const strimFuncs = JSON.parse(JSON.parse(msg))
+      console.log(strimFuncs.subscribe);
+      if (strimFuncs.subscribe) {
+        strimMaps.set(hash(strimFuncs.subscribe), strimFuncs)
         // const strim = strimFuncs.reduce((accStrim, strimFunc) => {
         //   accStrim.pipe(strimFunc)
         // },new Strim())
@@ -129,7 +131,7 @@ function setWs(router) {
         //   ws.send(JSON.stringify({unsubscribe:'unsubscribe'}))
         // })
       } else {
-        console.log(strimFuncs.type);
+        console.log(2,strimFuncs.type);
       }
 
 
