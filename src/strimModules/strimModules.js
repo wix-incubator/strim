@@ -3,6 +3,7 @@ const expressWs = require('express-ws')
 const path = require('path')
 const fs = require('fs')
 const webpack = require('webpack')
+const {Subject, Observable, Subscriber, isObservable} = require('rxjs')
 const hash = require('object-hash')
 
 const {
@@ -112,35 +113,73 @@ function importModules(modulesPath) {
 }
 
 const strimMaps = new Map()
+
 function setWs(router) {
   router.ws('/ws', (ws, _) => {
     ws.on('message', function(msg) {
       console.log(msg);
-      const strimFuncs = JSON.parse(JSON.parse(msg))
-      console.log(strimFuncs.pipeItems);
-      if (strimFuncs.subscribe) {
-        strimMaps.set(strimFuncs.subscribe, strimFuncs)
-        // const strim = strimFuncs.reduce((accStrim, strimFunc) => {
-        //   accStrim.pipe(strimFunc)
-        // },new Strim())
-        // strim.subscribe((val)=>{
-        //   ws.send(val)
-        // },(err)=>{
-        //   ws.send({err})
-        // },()=>{
-        //   ws.send(JSON.stringify({unsubscribe:'unsubscribe'}))
-        // })
+      const data = JSON.parse(JSON.parse(msg))
+      if (data.subscribe) {
+        // console.log(data.pipeItems);
+        console.log(data.subscribe);
+        const subject = subjectifyStrim(data, ws)
+        strimMaps.set(data.subscribe, {subject})
+      } else if (data.unsubscribe) {
+        const serverStrim = strimMaps.get(data.unsubscribe)
+        serverStrim.subject.complete()
+        serverStrim.subject.unsubscribe()
+        strimMaps.delete(data.unsubscribe)
       } else {
-        console.log(2,strimFuncs.type);
+        const serverStrim = strimMaps.get(data.pipeHash)
+        serverStrim.subject.next(data.value)
       }
-
-
-      // {module, func, args}
-      // const res = strimModules[module][func].apply(strimModules[module], args)
-      // ws.send(res);
-      // ws.send(msg)
     })
   })
+}
+
+function pipeableWrapper(scope, func, args = []) {
+  return (source) =>
+    new Observable(observer => {
+      return source.subscribe({
+        next(x) {
+          const result = func.apply(scope, [...args, x])
+
+          if (isObservable(result)) {
+            result.subscribe(observer)
+          } else {
+            observer.next(result)
+          }
+        },
+        error(err) {
+          observer.error(err)
+        },
+        complete() {
+          observer.complete()
+        },
+      })
+    })
+}
+
+function getPipeableFunc(execFuncData) {
+  const { module, func, args } = execFuncData
+  const src = strimModules[module]
+  return pipeableWrapper(src, src[func], args)
+}
+
+function subjectifyStrim({subscribe, pipeItems}, ws) {
+  const subject = new Subject()
+  const observable = pipeItems.reduce((accStrim, strimFunc) => {
+    return accStrim.pipe(getPipeableFunc(strimFunc))
+  }, subject)
+
+  observable.subscribe((value)=>{
+    ws.send(JSON.stringify({value, type: subscribe}))
+  },(err)=>{
+    ws.send(JSON.stringify({err, type: subscribe}))
+  },()=>{
+    // ws.send(JSON.stringify({unsubscribe: subscribe}))
+  })
+  return subject
 }
 
 function getConfituredRouter(modulesPath) {

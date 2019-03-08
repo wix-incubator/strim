@@ -77,11 +77,11 @@ const pipeableWrapper = (scope, func, args: any[] = []) => <T>(
 const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
   source: Observable<T>,
 ) => {
-  const pipeItemsKey = hash(pipeItems)
+  const pipeHash = hash(pipeItems)
   const wsObservable = wsSubject.multiplex(
-    () => JSON.stringify({ subscribe: pipeItemsKey, pipeItems }),
-    () => JSON.stringify({ unsubscribe: pipeItemsKey }),
-    message => message.type === pipeItemsKey,
+    () => JSON.stringify({ subscribe: pipeHash, pipeItems }),
+    () => JSON.stringify({ unsubscribe: pipeHash }),
+    message => message.type === pipeHash,
   )
 
   return new Observable<T>(observer => {
@@ -92,7 +92,7 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
     )
 
     return source.subscribe(
-      (x) => wsSubject.next(JSON.stringify(x)),
+      (value) => wsSubject.next(JSON.stringify({pipeHash, value})),
       wsSubject.error,
       () => {
         // wsSubscriber.unsubscribe()
