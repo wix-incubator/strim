@@ -117,10 +117,9 @@ const strimMaps = new Map()
 function setWs(router) {
   router.ws('/ws', (ws, _) => {
     ws.on('message', function(msg) {
-      console.log(msg);
+      // console.log(msg);
       const data = JSON.parse(JSON.parse(msg))
       if (data.subscribe) {
-        // console.log(data.pipeItems);
         console.log(data.subscribe);
         const subject = subjectifyStrim(data, ws)
         strimMaps.set(data.subscribe, {subject})
