@@ -86,7 +86,13 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
 
   return new Observable<T>(observer => {
     const wsSubscriber = wsObservable.subscribe(
-      observer.next,
+      (x) => {
+        // console.log('got', x)
+        if (x.error){
+          return observer.error(x.error)
+        }
+        return observer.next(x.value)
+      },
       observer.error,
       observer.complete,
     )
@@ -95,6 +101,7 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
       (value) => wsSubject.next(JSON.stringify({pipeHash, value})),
       wsSubject.error,
       () => {
+        // TODO: handle this correctly
         // wsSubscriber.unsubscribe()
         // return wsSubject.complete()
       },
