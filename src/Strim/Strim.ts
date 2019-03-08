@@ -57,6 +57,14 @@ export default class Strim implements IStrim {
     return this
   }
 
+  public toServer(worker: boolean = false): IStrim {
+    return this.to(Environment.Server, worker)
+  }
+
+  public toClient(worker: boolean = false): IStrim {
+    return this.to(Environment.Client, worker)
+  }
+
   public async subscribe(
     observerOrNext: Observer<any> | ((value: any) => void) = console.log,
     error: (error: any) => void = console.error,
