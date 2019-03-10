@@ -43,6 +43,7 @@ new Strim()
     func: 'get',
     args: [1, 2, 4],
   })
+  .toServer()
   .pipe({
     module: 'globals',
     func: 'runningSum',
@@ -74,6 +75,12 @@ The core class which activates the `strim` flow
   * __func__ (*Default `'default'`*): The function name within the module.:
   * __env__ (*Default `last func's environment`*): The environment in which we want the function to run in (can be `Environment.Client` or `Environment.Server`).:
   * __args__: arguments that will be sent to the piped function.
+
+##### toClient(worker)
+* __worker__ (*Default `false`*): Weather to open in a worker or not.
+
+##### toServer(worker)
+* __worker__ (*Default `false`*): Weather to open in a worker or not.
 
 ##### subscribe(onNext, onError, onComplete)
 * __onNext__ (*Default `console.log`*): callback function that will occur every time a new value is received.
