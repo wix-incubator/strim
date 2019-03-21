@@ -2,7 +2,7 @@ import http from 'http'
 import express from 'express'
 import path from 'path'
 import WebSocket from 'isomorphic-ws'
-import { setStrimModules } from '../src/index'
+import { setStrimModules, setWs } from '../src/index'
 
 const PORT = 4321
 
@@ -18,6 +18,7 @@ describe('Strim Modules', () => {
     server = app.listen(PORT, () => {
       done()
     })
+    setWs(server)
   })
   afterEach(() => {
     server.close()
@@ -41,7 +42,7 @@ describe('Strim Modules', () => {
   describe('modules', () => {
     it('should return echo', done => {
       // start a ws to the server
-      const ws = new WebSocket(`ws://localhost:${PORT}/strim/ws`)
+      const ws = new WebSocket(`ws://localhost:${PORT}/`)
       // send it the correct message
       const clientData = Date.now()
       ws.onopen = () => {

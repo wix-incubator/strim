@@ -1,9 +1,9 @@
 const express = require('express')
-const expressWs = require('express-ws')
+const WebSocket = require('ws')
 const path = require('path')
 const fs = require('fs')
 const webpack = require('webpack')
-const {Subject, Observable, Subscriber, isObservable} = require('rxjs')
+const { Subject, Observable, Subscriber, isObservable } = require('rxjs')
 const hash = require('object-hash')
 
 const {
@@ -114,30 +114,31 @@ function importModules(modulesPath) {
 
 const strimMaps = new Map()
 
-function setWs(router) {
-  router.ws('/ws', (ws, _) => {
-    ws.on('message', function(msg) {
-      // console.log(msg);
-      const data = JSON.parse(JSON.parse(msg))
-      if (data.subscribe) {
-        console.log(data.subscribe);
-        const subject = subjectifyStrim(data, ws)
-        strimMaps.set(data.subscribe, {subject})
-      } else if (data.unsubscribe) {
-        const serverStrim = strimMaps.get(data.unsubscribe)
-        serverStrim.subject.complete()
-        serverStrim.subject.unsubscribe()
-        strimMaps.delete(data.unsubscribe)
-      } else {
-        const serverStrim = strimMaps.get(data.pipeHash)
-        serverStrim.subject.next(data.value)
-      }
-    })
+function setWs(ws) {
+  ws.on('message', function(msg) {
+    console.log(msg)
+    const data = JSON.parse(JSON.parse(msg))
+    if (data.subscribe) {
+      console.log(data.subscribe)
+      const subject = subjectifyStrim(data, ws)
+      strimMaps.set(data.subscribe, { subject })
+    } else if (data.unsubscribe) {
+      const serverStrim = strimMaps.get(data.unsubscribe)
+      serverStrim.subject.complete()
+      serverStrim.subject.unsubscribe()
+      strimMaps.delete(data.unsubscribe)
+    } else if (data.pipeHash) {
+      const serverStrim = strimMaps.get(data.pipeHash)
+      serverStrim.subject.next(data.value)
+    } else {
+      console.error(data)
+      ws.send(data)
+    }
   })
 }
 
 function pipeableWrapper(scope, func, args = []) {
-  return (source) =>
+  return source =>
     new Observable(observer => {
       return source.subscribe({
         next(x) {
@@ -165,19 +166,23 @@ function getPipeableFunc(execFuncData) {
   return pipeableWrapper(src, src[func], args)
 }
 
-function subjectifyStrim({subscribe, pipeItems}, ws) {
+function subjectifyStrim({ subscribe, pipeItems }, ws) {
   const subject = new Subject()
   const observable = pipeItems.reduce((accStrim, strimFunc) => {
     return accStrim.pipe(getPipeableFunc(strimFunc))
   }, subject)
 
-  observable.subscribe((value)=>{
-    ws.send(JSON.stringify({value, type: subscribe}))
-  },(err)=>{
-    ws.send(JSON.stringify({err, type: subscribe}))
-  },()=>{
-    // ws.send(JSON.stringify({unsubscribe: subscribe}))
-  })
+  observable.subscribe(
+    value => {
+      ws.send(JSON.stringify({ value, type: subscribe }))
+    },
+    err => {
+      ws.send(JSON.stringify({ err, type: subscribe }))
+    },
+    () => {
+      // ws.send(JSON.stringify({unsubscribe: subscribe}))
+    },
+  )
   return subject
 }
 
@@ -185,19 +190,24 @@ function getConfituredRouter(modulesPath) {
   const router = express.Router()
   setHealthcheck(router)
   importModules(modulesPath)
-  setWs(router)
 
-  strimClientBundlePromise = createClientBundle(modulesPath).catch(console.error)
+  strimClientBundlePromise = createClientBundle(modulesPath).catch(
+    console.error,
+  )
   setBundleEndpoint(router)
   return router
 }
 
 module.exports = {
+  setWs: function(server) {
+    const wss = new WebSocket.Server({ server })
+    wss.on('connection', setWs)
+  },
   setStrimModules: function(
     app,
     { wsRoute = '/strim', modulesPath = path.resolve('node_modules') } = {},
   ) {
-    expressWs(app)
+    // expressWs(app)
     app.use(wsRoute, getConfituredRouter(modulesPath))
     return app
   },
