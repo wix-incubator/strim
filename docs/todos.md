@@ -4,7 +4,7 @@
 
 Feature list with priorities:
 
-- [ ] simple echo only client
+- [x] simple echo only client
 - [x] add piping modules
 - [x] middleware for express
 - [x] simple echo only server
