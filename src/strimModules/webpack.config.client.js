@@ -4,13 +4,12 @@ const CleanWebpackPlugin = require('clean-webpack-plugin')
 const VirtualModulePlugin = require('virtual-module-webpack-plugin')
 
 const STRIM_CLIENT_BUNDLE_FILE_PATH = './client.bundle.js'
-
-function getClientConfig(content) {
+function getClientConfig(content, outDir) {
   return {
     entry: './clientBundle.js',
     target: 'web',
     output: {
-      path: path.resolve(process.cwd(), 'dist/client'),
+      path: path.resolve(outDir, 'bundles'),
       filename: STRIM_CLIENT_BUNDLE_FILE_PATH,
     },
     mode: 'production',
@@ -24,7 +23,9 @@ function getClientConfig(content) {
       ],
     },
     plugins: [
-      new CleanWebpackPlugin(),
+      new CleanWebpackPlugin({
+        cleanOnceBeforeBuildPatterns: [STRIM_CLIENT_BUNDLE_FILE_PATH],
+      }),
       new VirtualModulePlugin({
         moduleName: './clientBundle.js',
         contents: content,

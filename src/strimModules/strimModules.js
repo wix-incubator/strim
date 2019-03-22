@@ -21,14 +21,18 @@ function setHealthcheck(router) {
 }
 
 function getPackageJsonFile(modulePath) {
-  const fileString = fs.readFileSync(
-    path.resolve(modulePath, 'package.json'),
-    'utf8',
-  )
-  return JSON.parse(fileString)
+  const packageJsonPath = path.resolve(modulePath, 'package.json')
+  if (fs.existsSync(packageJsonPath)) {
+    const fileString = fs.readFileSync(packageJsonPath, 'utf8')
+    return JSON.parse(fileString)
+  }
+  return null
 }
 
 function shouldBundleModule(packageJsonFile) {
+  if (!packageJsonFile) {
+    return false
+  }
   const { environment } = packageJsonFile
   if (environment && environment.client === false) {
     return false
@@ -60,9 +64,9 @@ function createModulesEntriesFile(modulesEnrties) {
   return `window.strimClientModules = { ${requires.join(',')}}`
 }
 
-function bundleModules(virtualEntriesfile) {
+function bundleModules(virtualEntriesfile, modulesPath) {
   return new Promise((resolve, reject) => {
-    const compiler = webpack(getClientConfig(virtualEntriesfile))
+    const compiler = webpack(getClientConfig(virtualEntriesfile, modulesPath))
     compiler.run((err, stats) => {
       if (err) {
         reject(err)
@@ -84,31 +88,29 @@ function createClientBundle(modulesPath) {
   const bundleEntries = getModulesEntriesToBundle(modulesPath)
 
   const virtualEntriesfile = createModulesEntriesFile(bundleEntries)
-  return bundleModules(virtualEntriesfile)
+  return bundleModules(virtualEntriesfile, modulesPath)
 }
 
-function setBundleEndpoint(router) {
+function setBundleEndpoint(router, modulesPath) {
   router.get('/strim.js', (_, res) => {
     strimClientBundlePromise.then(() => {
       res.sendFile(
-        path.resolve(
-          process.env.MOUNT_POINT,
-          'dist/client',
-          STRIM_CLIENT_BUNDLE_FILE_PATH,
-        ),
+        path.resolve(modulesPath, 'bundles', STRIM_CLIENT_BUNDLE_FILE_PATH),
       )
     })
   })
 }
 
+function shouldRequireModule(modulePath) {
+  return !modulePath.endsWith('bundles')
+}
+
 function importModules(modulesPath) {
   const files = fs.readdirSync(modulesPath)
   files.forEach(moduleName => {
-    strimModules[moduleName] = require(path.join(
-      process.cwd(),
-      modulesPath,
-      moduleName,
-    ))
+    const modulePath = path.join(process.cwd(), modulesPath, moduleName)
+    if (shouldRequireModule(modulePath))
+      strimModules[moduleName] = require(modulePath)
   })
 }
 
@@ -194,7 +196,7 @@ function getConfituredRouter(modulesPath) {
   strimClientBundlePromise = createClientBundle(modulesPath).catch(
     console.error,
   )
-  setBundleEndpoint(router)
+  setBundleEndpoint(router, modulesPath)
   return router
 }
 
@@ -207,7 +209,6 @@ module.exports = {
     app,
     { wsRoute = '/strim', modulesPath = path.resolve('node_modules') } = {},
   ) {
-    // expressWs(app)
     app.use(wsRoute, getConfituredRouter(modulesPath))
     return app
   },

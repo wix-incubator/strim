@@ -1,7 +1,8 @@
 import http from 'http'
 import express from 'express'
-import path from 'path'
 import WebSocket from 'isomorphic-ws'
+import axios from 'axios'
+import adapter from 'axios/lib/adapters/http'
 import { setStrimModules, setWs } from '../src/index'
 
 const PORT = 4321
@@ -25,9 +26,16 @@ describe('Strim Modules', () => {
   })
 
   describe('setup', () => {
-    it('should setup module directory and return the express app', () => {
+    it('should setup module directory and return the express app', done => {
       expect(app).toBeTruthy()
-    })
+      axios
+        .get(`http://localhost:${PORT}/strim/strim.js`, { adapter })
+        .then(res => {
+          expect(res).toBeTruthy()
+          done()
+        })
+        .catch(done)
+    }, 10000)
 
     it('should throw error when module dir is not there', () => {
       app = express()
