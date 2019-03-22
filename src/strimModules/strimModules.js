@@ -92,7 +92,7 @@ function setBundleEndpoint(router) {
     strimClientBundlePromise.then(() => {
       res.sendFile(
         path.resolve(
-          process.env.APP_PERSISTENT_DIR,
+          process.env.MOUNT_POINT,
           '../../dist/client',
           STRIM_CLIENT_BUNDLE_FILE_PATH,
         ),
