@@ -93,7 +93,7 @@ function setBundleEndpoint(router) {
       res.sendFile(
         path.resolve(
           process.env.MOUNT_POINT,
-          '../../dist/client',
+          'dist/client',
           STRIM_CLIENT_BUNDLE_FILE_PATH,
         ),
       )
