@@ -91,11 +91,11 @@ function createClientBundle(modulesPath) {
   return bundleModules(virtualEntriesfile, modulesPath)
 }
 
-function setBundleEndpoint(router, modulesPath) {
+function setBundleEndpoint(router) {
   router.get('/strim.js', (_, res) => {
     strimClientBundlePromise.then(() => {
       res.sendFile(
-        path.resolve(modulesPath, 'bundles', STRIM_CLIENT_BUNDLE_FILE_PATH),
+        path.resolve(process.env.APP_PRESISTENT_DIR, 'bundles', STRIM_CLIENT_BUNDLE_FILE_PATH),
       )
     })
   })
@@ -196,7 +196,7 @@ function getConfituredRouter(modulesPath) {
   strimClientBundlePromise = createClientBundle(modulesPath).catch(
     console.error,
   )
-  setBundleEndpoint(router, modulesPath)
+  setBundleEndpoint(router)
   return router
 }
 
