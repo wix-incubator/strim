@@ -9,7 +9,7 @@ function getClientConfig(content, outDir) {
     entry: './clientBundle.js',
     target: 'web',
     output: {
-      path: path.resolve(outDir, 'bundles'),
+      path: outDir,
       filename: STRIM_CLIENT_BUNDLE_FILE_PATH,
     },
     mode: 'production',

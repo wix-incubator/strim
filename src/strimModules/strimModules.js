@@ -64,9 +64,9 @@ function createModulesEntriesFile(modulesEnrties) {
   return `window.strimClientModules = { ${requires.join(',')}}`
 }
 
-function bundleModules(virtualEntriesfile, modulesPath) {
+function bundleModules(virtualEntriesfile, bundlesDir) {
   return new Promise((resolve, reject) => {
-    const compiler = webpack(getClientConfig(virtualEntriesfile, modulesPath))
+    const compiler = webpack(getClientConfig(virtualEntriesfile, bundlesDir))
     compiler.run((err, stats) => {
       if (err) {
         reject(err)
@@ -84,19 +84,17 @@ function bundleModules(virtualEntriesfile, modulesPath) {
   })
 }
 
-function createClientBundle(modulesPath) {
+function createClientBundle(modulesPath, bundlesDir) {
   const bundleEntries = getModulesEntriesToBundle(modulesPath)
 
   const virtualEntriesfile = createModulesEntriesFile(bundleEntries)
-  return bundleModules(virtualEntriesfile, modulesPath)
+  return bundleModules(virtualEntriesfile, bundlesDir)
 }
 
-function setBundleEndpoint(router) {
+function setBundleEndpoint(router, bundlesDir) {
   router.get('/strim.js', (_, res) => {
     strimClientBundlePromise.then(() => {
-      res.sendFile(
-        path.resolve(process.env.APP_PRESISTENT_DIR, 'bundles', STRIM_CLIENT_BUNDLE_FILE_PATH),
-      )
+      res.sendFile(path.resolve(bundlesDir, STRIM_CLIENT_BUNDLE_FILE_PATH))
     })
   })
 }
@@ -188,15 +186,15 @@ function subjectifyStrim({ subscribe, pipeItems }, ws) {
   return subject
 }
 
-function getConfituredRouter(modulesPath) {
+function getConfituredRouter(modulesPath, bundlesDir) {
   const router = express.Router()
   setHealthcheck(router)
   importModules(modulesPath)
 
-  strimClientBundlePromise = createClientBundle(modulesPath).catch(
+  strimClientBundlePromise = createClientBundle(modulesPath, bundlesDir).catch(
     console.error,
   )
-  setBundleEndpoint(router)
+  setBundleEndpoint(router, bundlesDir)
   return router
 }
 
@@ -207,9 +205,13 @@ module.exports = {
   },
   setStrimModules: function(
     app,
-    { wsRoute = '/strim', modulesPath = path.resolve('node_modules') } = {},
+    {
+      wsRoute = '/strim',
+      modulesPath = path.resolve('node_modules'),
+      bundlesDir = path.resolve('node_modules', 'bundles'),
+    } = {},
   ) {
-    app.use(wsRoute, getConfituredRouter(modulesPath))
+    app.use(wsRoute, getConfituredRouter(modulesPath, bundlesDir))
     return app
   },
 }
