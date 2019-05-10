@@ -37,18 +37,29 @@ describe('Strim Modules', () => {
         .catch(done)
     }, 10000)
 
+    it('should have webworker bundle', done => {
+      axios
+        .get(`http://localhost:${PORT}/strim/strim.webworker.js`, { adapter })
+        .then(res => {
+          expect(res).toBeTruthy()
+          done()
+        })
+        .catch(done)
+    }, 10000)
+
     it('should throw error when module dir is not there', () => {
       app = express()
       expect(() => {
         setStrimModules(app, {
           modulesPath: 'test/nomodules',
+          bundlesDir: 'test/nomodules/bundles',
         })
       }).toThrowError('ENOENT: no such file or directory')
     })
   })
 
   describe('modules', () => {
-    it('should return echo', done => {
+    it('should return echo from websocket', done => {
       // start a ws to the server
       const ws = new WebSocket(`ws://localhost:${PORT}/`)
       // send it the correct message

@@ -38,7 +38,7 @@ export const convertToPipeableFuncs = async (
     const environmentalPipeableFunc: [any?] = []
 
     for (const item of environmentalItems) {
-      if (environmentalItems[0].env===Environment.Client) {
+      if (environmentalItems[0].env === Environment.Client) {
         environmentalPipeableFunc.push(await getPipeableFunc(item))
       } else {
         environmentalPipeableFunc.push(item)
@@ -86,9 +86,9 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
 
   return new Observable<T>(observer => {
     const wsSubscriber = wsObservable.subscribe(
-      (x) => {
+      x => {
         // console.log('got', x)
-        if (x.error){
+        if (x.error) {
           return observer.error(x.error)
         }
         return observer.next(x.value)
@@ -98,7 +98,7 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
     )
 
     return source.subscribe(
-      (value) => wsSubject.next(JSON.stringify({pipeHash, value})),
+      value => wsSubject.next(JSON.stringify({ pipeHash, value })),
       wsSubject.error,
       () => {
         // TODO: handle this correctly

@@ -4,13 +4,27 @@ const CleanWebpackPlugin = require('clean-webpack-plugin')
 const VirtualModulePlugin = require('virtual-module-webpack-plugin')
 
 const STRIM_CLIENT_BUNDLE_FILE_PATH = './client.bundle.js'
-function getClientConfig(content, outDir) {
+const STRIM_WEBWORKER_BUNDLE_FILE_PATH = './webworker.bundle.js'
+
+const ENVIRONMENT = {
+  CLIENT: 'CLIENT',
+  WEBWORKER: 'WEBWORKER',
+}
+
+function getClientConfig(content, outDir, environment) {
+  let filename
+  if (ENVIRONMENT.CLIENT === environment) {
+    filename = STRIM_CLIENT_BUNDLE_FILE_PATH
+  } else if (ENVIRONMENT.WEBWORKER === environment) {
+    filename = STRIM_WEBWORKER_BUNDLE_FILE_PATH
+  }
+
   return {
     entry: './clientBundle.js',
     target: 'web',
     output: {
       path: outDir,
-      filename: STRIM_CLIENT_BUNDLE_FILE_PATH,
+      filename,
     },
     mode: 'production',
     module: {
@@ -24,7 +38,7 @@ function getClientConfig(content, outDir) {
     },
     plugins: [
       new CleanWebpackPlugin({
-        cleanOnceBeforeBuildPatterns: [STRIM_CLIENT_BUNDLE_FILE_PATH],
+        cleanOnceBeforeBuildPatterns: [filename],
       }),
       new VirtualModulePlugin({
         moduleName: './clientBundle.js',
@@ -40,4 +54,6 @@ function getClientConfig(content, outDir) {
 module.exports = {
   getClientConfig,
   STRIM_CLIENT_BUNDLE_FILE_PATH,
+  STRIM_WEBWORKER_BUNDLE_FILE_PATH,
+  ENVIRONMENT,
 }

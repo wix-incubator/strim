@@ -8,11 +8,14 @@ const hash = require('object-hash')
 
 const {
   STRIM_CLIENT_BUNDLE_FILE_PATH,
+  STRIM_WEBWORKER_BUNDLE_FILE_PATH,
   getClientConfig,
+  ENVIRONMENT,
 } = require('./webpack.config.client')
 
 const strimModules = {}
 let strimClientBundlePromise
+let strimWebworkerBundlePromise
 
 function setHealthcheck(router) {
   router.get('/', (_, res) => {
@@ -29,7 +32,7 @@ function getPackageJsonFile(modulePath) {
   return null
 }
 
-function shouldBundleModule(packageJsonFile) {
+function shouldBundleModuleToClient(packageJsonFile) {
   if (!packageJsonFile) {
     return false
   }
@@ -40,13 +43,29 @@ function shouldBundleModule(packageJsonFile) {
   return true
 }
 
-function getModulesEntriesToBundle(modulesPath) {
+function shouldBundleModuleToWebworker(packageJsonFile) {
+  if (!packageJsonFile) {
+    return false
+  }
+  const { environment } = packageJsonFile
+  if (environment && environment.webwroker === true) {
+    return true
+  }
+  return false
+}
+
+function getModulesEntriesToBundle(modulesPath, environment) {
   const files = fs.readdirSync(modulesPath)
   return files.reduce((entriesPath, fileName) => {
     const filePath = path.resolve(modulesPath, fileName)
     const packageJson = getPackageJsonFile(filePath)
 
-    if (shouldBundleModule(packageJson)) {
+    if (
+      (environment === ENVIRONMENT.CLIENT &&
+        shouldBundleModuleToClient(packageJson)) ||
+      (environment === ENVIRONMENT.WEBWORKER &&
+        shouldBundleModuleToWebworker(packageJson))
+    ) {
       entriesPath.push({
         name: packageJson.name,
         entry: path.resolve(filePath, packageJson.main),
@@ -57,16 +76,27 @@ function getModulesEntriesToBundle(modulesPath) {
   }, [])
 }
 
-function createModulesEntriesFile(modulesEnrties) {
+function createModulesEntriesFile(modulesEnrties, environment) {
   const requires = modulesEnrties.map(
     ({ name, entry }) => `${name}: require('${entry}')`,
   )
-  return `window.strimClientModules = { ${requires.join(',')}}`
+
+  if (environment === ENVIRONMENT.CLIENT) {
+    return `window.strimClientModules = { ${requires.join(',')}}`
+  } else if (environment === ENVIRONMENT.WEBWORKER) {
+    return `
+self.strimClientModules = { ${requires.join(',')}}
+self.addEventListener('message', (msg)=>{
+  postMessage(msg)
+})`
+  }
 }
 
-function bundleModules(virtualEntriesfile, bundlesDir) {
+function bundleModules(virtualEntriesfile, bundlesDir, environment) {
   return new Promise((resolve, reject) => {
-    const compiler = webpack(getClientConfig(virtualEntriesfile, bundlesDir))
+    const compiler = webpack(
+      getClientConfig(virtualEntriesfile, bundlesDir, environment),
+    )
     compiler.run((err, stats) => {
       if (err) {
         reject(err)
@@ -84,17 +114,26 @@ function bundleModules(virtualEntriesfile, bundlesDir) {
   })
 }
 
-function createClientBundle(modulesPath, bundlesDir) {
-  const bundleEntries = getModulesEntriesToBundle(modulesPath)
+function createClientBundle(modulesPath, bundlesDir, environment) {
+  const bundleEntries = getModulesEntriesToBundle(modulesPath, environment)
 
-  const virtualEntriesfile = createModulesEntriesFile(bundleEntries)
-  return bundleModules(virtualEntriesfile, bundlesDir)
+  const virtualEntriesfile = createModulesEntriesFile(
+    bundleEntries,
+    environment,
+  )
+  return bundleModules(virtualEntriesfile, bundlesDir, environment)
 }
 
-function setBundleEndpoint(router, bundlesDir) {
+function setBundlesEndpoint(router, bundlesDir) {
   router.get('/strim.js', (_, res) => {
     strimClientBundlePromise.then(() => {
       res.sendFile(path.resolve(bundlesDir, STRIM_CLIENT_BUNDLE_FILE_PATH))
+    })
+  })
+
+  router.get('/strim.webworker.js', (_, res) => {
+    strimWebworkerBundlePromise.then(() => {
+      res.sendFile(path.resolve(bundlesDir, STRIM_WEBWORKER_BUNDLE_FILE_PATH))
     })
   })
 }
@@ -191,10 +230,23 @@ function getConfituredRouter(modulesPath, bundlesDir) {
   setHealthcheck(router)
   importModules(modulesPath)
 
-  strimClientBundlePromise = createClientBundle(modulesPath, bundlesDir).catch(
-    console.error,
-  )
-  setBundleEndpoint(router, bundlesDir)
+  strimClientBundlePromise = createClientBundle(
+    modulesPath,
+    bundlesDir,
+    ENVIRONMENT.CLIENT,
+  ).then(() => {
+    console.log('strim client bundle compiled successfully')
+  }, console.error)
+
+  strimWebworkerBundlePromise = createClientBundle(
+    modulesPath,
+    bundlesDir,
+    ENVIRONMENT.WEBWORKER,
+  ).then(() => {
+    console.log('strim webworker bundle compiled successfully')
+  }, console.error)
+
+  setBundlesEndpoint(router, bundlesDir)
   return router
 }
 
@@ -208,7 +260,7 @@ module.exports = {
     {
       wsRoute = '/strim',
       modulesPath = path.resolve('node_modules'),
-      bundlesDir = path.resolve('node_modules', 'bundles'),
+      bundlesDir = path.resolve(modulesPath, 'bundles'),
     } = {},
   ) {
     app.use(wsRoute, getConfituredRouter(modulesPath, bundlesDir))
