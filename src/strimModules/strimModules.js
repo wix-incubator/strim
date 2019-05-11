@@ -5,6 +5,9 @@ const fs = require('fs')
 const webpack = require('webpack')
 const { Subject, Observable, Subscriber, isObservable } = require('rxjs')
 const hash = require('object-hash')
+const utils = require('./utils')
+
+let strimNodeModules
 
 const {
   STRIM_CLIENT_BUNDLE_FILE_PATH,
@@ -13,7 +16,6 @@ const {
   ENVIRONMENT,
 } = require('./webpack.config.client')
 
-const strimModules = {}
 let strimClientBundlePromise
 let strimWebworkerBundlePromise
 
@@ -138,19 +140,6 @@ function setBundlesEndpoint(router, bundlesDir) {
   })
 }
 
-function shouldRequireModule(modulePath) {
-  return !modulePath.endsWith('bundles')
-}
-
-function importModules(modulesPath) {
-  const files = fs.readdirSync(modulesPath)
-  files.forEach(moduleName => {
-    const modulePath = path.join(process.cwd(), modulesPath, moduleName)
-    if (shouldRequireModule(modulePath))
-      strimModules[moduleName] = require(modulePath)
-  })
-}
-
 const strimMaps = new Map()
 
 function setWs(ws) {
@@ -201,7 +190,7 @@ function pipeableWrapper(scope, func, args = []) {
 
 function getPipeableFunc(execFuncData) {
   const { module, func, args } = execFuncData
-  const src = strimModules[module]
+  const src = strimNodeModules[module]
   return pipeableWrapper(src, src[func], args)
 }
 
@@ -228,7 +217,8 @@ function subjectifyStrim({ subscribe, pipeItems }, ws) {
 function getConfituredRouter(modulesPath, bundlesDir) {
   const router = express.Router()
   setHealthcheck(router)
-  importModules(modulesPath)
+  strimNodeModules = utils.getNodeStrimModules(modulesPath)
+  const strimWorker = utils.getNodeStrimWorker(modulesPath)
 
   strimClientBundlePromise = createClientBundle(
     modulesPath,
