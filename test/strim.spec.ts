@@ -7,8 +7,8 @@ describe('Strim', () => {
     strim = new Strim()
   })
 
-  describe('single pipe flow', () => {
-    it('should create a new count property', done => {
+  describe('pipe flow with worker', () => {
+    xit('should create a new count property', done => {
       let index = 0
       const arr = [1, 2, 3, 4]
       strim
@@ -17,9 +17,14 @@ describe('Strim', () => {
           func: 'get',
           args: [arr],
         })
+        .toServer(true)
+        .pipe({
+          module: '../../test/modules/globals',
+          func: 'increase',
+        })
         .subscribe({
           next: val => {
-            expect(val).toBe(arr[index])
+            expect(val).toBe(arr[index] + 1)
             index++
           },
           error: err => {

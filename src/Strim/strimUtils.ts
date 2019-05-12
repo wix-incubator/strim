@@ -38,11 +38,12 @@ export const convertToPipeableFuncs = async (
     const environmentalPipeableFunc: [any?] = []
 
     for (const item of environmentalItems) {
-      if (environmentalItems[0].env === Environment.Client) {
-        environmentalPipeableFunc.push(await getPipeableFunc(item))
-      } else {
-        environmentalPipeableFunc.push(item)
-      }
+      // if (environmentalItems[0].env === Environment.Client) {
+      environmentalPipeableFunc.push(await getPipeableFunc(item))
+      // } else {
+      //   environmentalPipeableFunc.push(await getPipeableFunc(item))
+      //   environmentalPipeableFunc.push(item)
+      // }
     }
 
     pipeableFuncsByEnvironment.push(environmentalPipeableFunc)
@@ -112,7 +113,7 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
 export const getPipeableFunc = async (
   execFuncData: IStrimExecFuncDataPiped,
 ) => {
-  const { module, func, args } = execFuncData
+  const { module, func, args, env } = execFuncData
 
   if (isBrowser()) {
     // @ts-ignore
@@ -130,9 +131,11 @@ export const convertToFullStrim = (
 ) => {
   return pipeableFuncsByEnvironment.reduce(
     (observable, environmentalPipeableFunc, envIndex) => {
+      environmentalPipeableFunc[0].env
       if (
         envIndex !== 0 &&
-        environmentalPipeableFunc[0].env !== Environment.Client
+        environmentalPipeableFunc[0].env !== Environment.Client &&
+        environmentalPipeableFunc[0].env !== Environment.ClientWorker
       ) {
         return observable.pipe(
           pipeableWsBridge(webSocketSubject, environmentalPipeableFunc),

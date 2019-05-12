@@ -12,6 +12,8 @@ interface IStrim {
   pipe(strim: IStrimExecFuncDataInput): IStrim
   subscribe(observer: Observer<any>): Promise<IStrim>
   to(env: Environment): IStrim
+  toServer(worker?: boolean): IStrim
+  toClient(worker?: boolean): IStrim
 }
 
 function addScript(src: string) {
@@ -48,9 +50,12 @@ export default class Strim implements IStrim {
     return this
   }
 
-  public to(env: Environment, worker: boolean = false): IStrim {
+  public to(env: Environment): IStrim {
     this.lastEnv = env
-    if (!this.ws && env === Environment.Server) {
+    if (
+      !this.ws &&
+      (env === Environment.Server || env === Environment.ServerWorker)
+    ) {
       // @ts-ignore
       this.ws = webSocket({ url: this.wsUrl })
     }
@@ -58,11 +63,17 @@ export default class Strim implements IStrim {
   }
 
   public toServer(worker: boolean = false): IStrim {
-    return this.to(Environment.Server, worker)
+    if (worker) {
+      return this.to(Environment.ServerWorker)
+    }
+    return this.to(Environment.Server)
   }
 
   public toClient(worker: boolean = false): IStrim {
-    return this.to(Environment.Client, worker)
+    if (worker) {
+      return this.to(Environment.ClientWorker)
+    }
+    return this.to(Environment.Client)
   }
 
   public async subscribe(

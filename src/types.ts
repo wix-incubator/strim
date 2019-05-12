@@ -2,8 +2,10 @@ import { Observer } from 'rxjs'
 import express from 'express'
 
 export enum Environment {
-  Server,
-  Client,
+  Server = 'Server',
+  Client = 'Client',
+  ServerWorker = 'ServerWorker',
+  ClientWorker = 'ClientWorker',
 }
 
 export interface IBaseStrimExecFuncData {
