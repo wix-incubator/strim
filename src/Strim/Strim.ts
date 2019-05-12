@@ -1,6 +1,7 @@
 import { Observer } from 'rxjs'
-import { webSocket } from 'rxjs/webSocket'
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import * as utils from './strimUtils'
+// import * as nodeUtils from '../strimModules/utils'
 import {
   Environment,
   IStrimExecFuncDataInput,
@@ -32,7 +33,8 @@ export default class Strim implements IStrim {
   private lastEnv: Environment
   //private websocketSubject: WebSocketSubject<any>
   private wsUrl: string
-  private ws: any
+  private ws: WebSocketSubject<any>
+  private nodeWorker: any
 
   constructor({ wsUrl = 'ws://localhost:4321/strim/ws' }: IStrimOptions = {}) {
     this.lastEnv = utils.getDefaultEnv()
@@ -58,6 +60,14 @@ export default class Strim implements IStrim {
     ) {
       // @ts-ignore
       this.ws = webSocket({ url: this.wsUrl })
+    }
+
+    if (
+      !this.nodeWorker &&
+      env === Environment.ServerWorker &&
+      utils.getDefaultEnv() === Environment.Server
+    ) {
+      // this.nodeWorker = nodeUtils.getNodeStrimWorker()
     }
     return this
   }
@@ -90,6 +100,7 @@ export default class Strim implements IStrim {
     const fullStrim = utils.convertToFullStrim(
       pipeableFuncsByEnvironment,
       this.ws,
+      this.nodeWorker,
     )
 
     // @ts-ignore

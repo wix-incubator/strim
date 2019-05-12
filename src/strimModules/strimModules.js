@@ -144,10 +144,9 @@ const strimMaps = new Map()
 
 function setWs(ws) {
   ws.on('message', function(msg) {
-    console.log(msg)
     const data = JSON.parse(JSON.parse(msg))
     if (data.subscribe) {
-      console.log(data.subscribe)
+      // console.log(data.subscribe)
       const subject = subjectifyStrim(data, ws)
       strimMaps.set(data.subscribe, { subject })
     } else if (data.unsubscribe) {
@@ -218,14 +217,16 @@ function getConfituredRouter(modulesPath, bundlesDir) {
   const router = express.Router()
   setHealthcheck(router)
   strimNodeModules = utils.getNodeStrimModules(modulesPath)
-  const strimWorker = utils.getNodeStrimWorker(modulesPath)
+  // const strimWorker = utils.getNodeStrimWorker(modulesPath)
 
   strimClientBundlePromise = createClientBundle(
     modulesPath,
     bundlesDir,
     ENVIRONMENT.CLIENT,
   ).then(() => {
-    console.log('strim client bundle compiled successfully')
+    if (!jest) {
+      console.log('strim client bundle compiled successfully')
+    }
   }, console.error)
 
   strimWebworkerBundlePromise = createClientBundle(
@@ -233,7 +234,9 @@ function getConfituredRouter(modulesPath, bundlesDir) {
     bundlesDir,
     ENVIRONMENT.WEBWORKER,
   ).then(() => {
-    console.log('strim webworker bundle compiled successfully')
+    if (!jest) {
+      console.log('strim webworker bundle compiled successfully')
+    }
   }, console.error)
 
   setBundlesEndpoint(router, bundlesDir)
@@ -253,6 +256,7 @@ module.exports = {
       bundlesDir = path.resolve(modulesPath, 'bundles'),
     } = {},
   ) {
+    // process.env.strimModulesPath = modulesPath
     app.use(wsRoute, getConfituredRouter(modulesPath, bundlesDir))
     return app
   },

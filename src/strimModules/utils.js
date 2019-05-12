@@ -32,6 +32,7 @@ function getNodeStrimModules(modulesPath) {
 }
 
 function getNodeStrimWorker(modulesPath) {
+  // console.log(process.env.strimModulesPath)
   const worker = new Worker(path.resolve(__dirname, './strimWorker.js'), {
     workerData: modulesPath,
   })
