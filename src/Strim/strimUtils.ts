@@ -39,7 +39,10 @@ export const convertToPipeableFuncs = async (
 
     for (const item of environmentalItems) {
       // if (environmentalItems[0].env === Environment.Client) {
-      environmentalPipeableFunc.push(await getPipeableFunc(item))
+      const pipeableFunc = (await getPipeableFunc(item)) as any
+
+      pipeableFunc.env = item.env
+      environmentalPipeableFunc.push(pipeableFunc)
       // } else {
       //   environmentalPipeableFunc.push(await getPipeableFunc(item))
       //   environmentalPipeableFunc.push(item)
@@ -131,15 +134,23 @@ export const convertToFullStrim = (
 ) => {
   return pipeableFuncsByEnvironment.reduce(
     (observable, environmentalPipeableFunc, envIndex) => {
-      environmentalPipeableFunc[0].env
+      // when sending to the server
       if (
         envIndex !== 0 &&
         environmentalPipeableFunc[0].env !== Environment.Client &&
         environmentalPipeableFunc[0].env !== Environment.ClientWorker
       ) {
-        return observable.pipe(
-          pipeableWsBridge(webSocketSubject, environmentalPipeableFunc),
-        )
+        const previousPipeableFunc = pipeableFuncsByEnvironment[
+          envIndex - 1
+        ] as any
+        if (
+          previousPipeableFunc.env === Environment.Client ||
+          previousPipeableFunc.env === Environment.ClientWorker
+        ) {
+          return observable.pipe(
+            pipeableWsBridge(webSocketSubject, environmentalPipeableFunc),
+          )
+        }
       }
 
       return environmentalPipeableFunc.reduce((subObservable, pipeableFunc) => {

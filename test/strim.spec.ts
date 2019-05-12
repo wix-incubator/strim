@@ -8,7 +8,7 @@ describe('Strim', () => {
   })
 
   describe('pipe flow with worker', () => {
-    xit('should create a new count property', done => {
+    it('should create a new count property', done => {
       let index = 0
       const arr = [1, 2, 3, 4]
       strim
