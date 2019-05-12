@@ -170,7 +170,7 @@ function pipeableWrapper(scope, func, args = []) {
     new Observable(observer => {
       return source.subscribe({
         next(x) {
-          const result = func.apply(scope, [...args, x])
+          const result = func.apply(scope, [args, x])
 
           if (isObservable(result)) {
             result.subscribe(observer)
