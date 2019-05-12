@@ -15,7 +15,7 @@ describe('Strim', () => {
         .pipe({
           module: '../../test/modules/globals',
           func: 'get',
-          args: [arr],
+          args: arr,
         })
         .toServer(true)
         .pipe({
@@ -45,7 +45,7 @@ describe('Strim', () => {
         .pipe({
           module: '../../test/modules/globals',
           func: 'get',
-          args: [arr],
+          args: arr,
         })
         .pipe({
           module: '../../test/modules/globals',

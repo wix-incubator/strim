@@ -55,13 +55,14 @@ export const convertToPipeableFuncs = async (
   return pipeableFuncsByEnvironment
 }
 
-const pipeableWrapper = (scope, func, args: any[] = []) => <T>(
+const pipeableWrapper = (scope, func, args: any) => <T>(
   source: Observable<T>,
 ) =>
   new Observable<T>(observer => {
     return source.subscribe({
       next(x) {
-        const result = func.apply(scope, [args, x])
+        const appliedArgs = args ? [args, x] : [x]
+        const result = func.apply(scope, appliedArgs)
 
         if (isObservable(result)) {
           result.subscribe(observer)

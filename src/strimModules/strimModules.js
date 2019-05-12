@@ -80,7 +80,7 @@ function getModulesEntriesToBundle(modulesPath, environment) {
 
 function createModulesEntriesFile(modulesEnrties, environment) {
   const requires = modulesEnrties.map(
-    ({ name, entry }) => `${name}: require('${entry}')`,
+    ({ name, entry }) => `"${name}": require('${entry}')`,
   )
 
   if (environment === ENVIRONMENT.CLIENT) {
@@ -169,7 +169,8 @@ function pipeableWrapper(scope, func, args = []) {
     new Observable(observer => {
       return source.subscribe({
         next(x) {
-          const result = func.apply(scope, [args, x])
+          const appliedArgs = args ? [args, x] : [x]
+          const result = func.apply(scope, appliedArgs)
 
           if (isObservable(result)) {
             result.subscribe(observer)
