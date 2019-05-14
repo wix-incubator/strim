@@ -25,7 +25,9 @@ const clientConfig = {
   plugins: [
     new CleanWebpackPlugin(),
     new CopyPlugin([
+      'src/strimModules/utils.js',
       'src/strimModules/strimModules.js',
+      'src/strimModules/strimWorker.js',
       'src/strimModules/webpack.config.client.js',
     ]),
   ],
