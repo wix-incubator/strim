@@ -4,81 +4,95 @@ const { repeat, delay, map, takeUntil, mapTo } = require('rxjs/operators')
 let distances
 let turnovers
 
-function initPlayersDistances(players){
+function initPlayersDistances(players) {
+  distances = {}
   players.forEach(player => {
     distances[player] = 0
   })
 }
 
-function initTurnovers(players){
+function initTurnovers(players) {
+  turnovers = {}
   players.forEach(player => {
     turnovers[player] = 0
   })
 }
 
-function getDistances(players){
+function getDistances(players) {
   if (!distances) {
-    initPlayersDistances(players);
+    initPlayersDistances(players)
   }
 
-  players.forEach(function(player){
-    distances[player] = distances[player] + Math.random().toFixed(3)
+  players.forEach(function(player) {
+    distances[player] = distances[player] + Number(Math.random().toFixed(3))
   })
+
+  return distances
 }
 
-function getTurnovers(players){
-  if (!distances) {
-    initTurnovers(players);
+function getTurnovers(players) {
+  if (!turnovers) {
+    initTurnovers(players)
   }
 
-  players.forEach(function(player){
-    turnovers[player] = Math.random() > 0.4 ? turnovers[player] : turnovers[player] + 1
+  players.forEach(function(player) {
+    turnovers[player] =
+      Math.random() > 0.4 ? turnovers[player] : turnovers[player] + 1
   })
+
+  return turnovers
 }
-
-
 
 function samplePlayersEvery(timeIntervalForUpdate) {
   const players = [3, 8, 9, 11, 20]
-  const gameTimer = timer(90 * 1000)
-  return interval(timeIntervalForUpdate).pipe(mapTo(players)).pipe(takeUntil(gameTimer))
+  const gameTimer = timer(9 * 1000)
+  return interval(timeIntervalForUpdate)
+    .pipe(mapTo(players))
+    .pipe(takeUntil(gameTimer))
 }
-
 
 function getPlayersDistances(players) {
   distances = getDistances(players)
-  return {players, distances}
+  return { players, distances }
 }
 
-function getPlayersTurnovers({players, distances}) {
+function getPlayersTurnovers({ players, distances }) {
   turnovers = getTurnovers(players)
-  return {players, distances, turnovers}
+  return { players, distances, turnovers }
 }
-
-
 
 module.exports = {
   samplePlayersEvery,
   getPlayersDistances,
   getPlayersTurnovers,
-  calcWeightedScore: function(args) {
-    const players = args[0].players
-    const turnovers = args[0].turnovers
-    const distances = args[0].distances
-    const weights = args[1].weights
-
+  calcScore: function(
+    { distance: distanceWeight, turnovers: turnoversWeight },
+    { players, distances, turnovers },
+  ) {
     const wheightedScores = {}
 
     players.forEach(player => {
-      wheightedScores[player] = distances[player] * weights.distance + turnovers[player] * weights.turnovers
+      wheightedScores[player] =
+        distances[player] * distanceWeight + turnovers[player] * turnoversWeight
     })
 
     return wheightedScores
   },
-  getWorstPlayer: function(args) {
-    const wheightedScores = args.wheightedScores
-
+  getWorstPlayer: function(scores) {
     // TODO return the worst player
-    return players[0]
-  }
+    const worstPlayer = Object.entries(scores).reduce(
+      (currentWorstPlayer, [playerNumber, currentScore]) => {
+        const { score } = currentWorstPlayer
+
+        if (score > currentScore) {
+          return { playerNumber, score: currentScore }
+        }
+
+        return currentWorstPlayer
+      },
+      { score: 1000 },
+    )
+
+    return worstPlayer.playerNumber
+  },
 }

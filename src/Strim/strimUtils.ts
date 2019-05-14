@@ -66,7 +66,11 @@ const pipeableWrapper = (scope, func, args: any) => <T>(
         const result = func.apply(scope, appliedArgs)
 
         if (isObservable(result)) {
-          result.subscribe(observer)
+          result.subscribe(
+            (y: any) => observer.next(y),
+            observer.error,
+            observer.complete,
+          )
         } else if (typeof result === 'function') {
           of(x)
             .pipe(result)
@@ -83,7 +87,7 @@ const pipeableWrapper = (scope, func, args: any) => <T>(
         observer.error(err)
       },
       complete() {
-        observer.complete()
+        // observer.complete()
       },
     })
   })
@@ -104,7 +108,6 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
   return new Observable<T>(observer => {
     const wsSubscriber = wsObservable.subscribe(
       x => {
-        // console.log('got', x)
         if (x.error) {
           return observer.error(x.error)
         }
@@ -137,7 +140,9 @@ export const getPipeableFunc = async (
     const clientModule = window.strimClientModules[module]
     return pipeableWrapper(clientModule, clientModule[func], args)
   } else {
-    const src = await import(`${modulesDir ? `${modulesDir}/` : ''}${module}`)
+    const src = await import(`${
+      modulesDir ? `${modulesDir}/` : '../../'
+    }${module}`)
     return pipeableWrapper(src, src[func], args)
   }
 }

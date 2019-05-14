@@ -1,7 +1,10 @@
 import Strim from '../src/index'
 
+jest.setTimeout(10000)
+
 describe('example', () => {
   const timeIntervalForUpdate = 1000
+  let index = 1
 
   it('', done => {
     new Strim()
@@ -10,20 +13,20 @@ describe('example', () => {
         func: 'samplePlayersEvery',
         args: timeIntervalForUpdate,
       })
-      .toServer()
+      // .toServer()
       .pipe({
         module: './test/modules/players-data',
-        func: 'getPlayersDistance',
+        func: 'getPlayersDistances',
       })
       .pipe({
         module: './test/modules/players-data',
         func: 'getPlayersTurnovers',
       })
-      .toClient()
+      // .toClient()
       .pipe({
-        module: './test/modules/math',
+        module: './test/modules/players-data',
         func: 'calcScore',
-        args: {weights:{distance:0.3, turnovers:0.7}},
+        args: { distance: 0.3, turnovers: 0.7 },
       })
       .pipe({
         module: './test/modules/players-data',
@@ -32,8 +35,12 @@ describe('example', () => {
       .subscribe({
         next: val => {
           console.log(val)
-          expect(val).toBe(4)
-          done()
+          // @ts-ignore
+          expect(val).not.toBeNaN()
+          index++
+          if (index === 9) {
+            done()
+          }
         },
         error: err => {
           throw new Error(err)
