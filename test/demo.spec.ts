@@ -1,36 +1,34 @@
-import { Environment } from '../src/types'
 import Strim from '../src/index'
 
 describe('example', () => {
-  const players = [3, 8, 9, 11, 20]
   const timeIntervalForUpdate = 1000
 
   it('', done => {
     new Strim()
       .pipe({
-        module: 'players-data',
-        func: 'initGame',
-        args: { players, timeIntervalForUpdate },
+        module: './test/modules/players-data',
+        func: 'samplePlayersEvery',
+        args: timeIntervalForUpdate,
       })
-      //.to(Environment.Server)
-      // .pipe({
-      //   module: 'players-data',
-      //   func: 'getPlayerDistance',
-      // })
-      // .pipe({
-      //   module: 'players-data',
-      //   func: 'getPlayerTurnovers',
-      // })
-      // .to(Environment.Client)
-      // .pipe({
-      //   module: 'math',
-      //   func: 'calcWeightedScore',
-      //   args: {weights:{distance:0.3, turnovers:0.7}},
-      // })
-      // .pipe({
-      //   module: 'players-data',
-      //   func: 'getWorstPlayer',
-      // })
+      .toServer()
+      .pipe({
+        module: './test/modules/players-data',
+        func: 'getPlayersDistance',
+      })
+      .pipe({
+        module: './test/modules/players-data',
+        func: 'getPlayersTurnovers',
+      })
+      .toClient()
+      .pipe({
+        module: './test/modules/math',
+        func: 'calcScore',
+        args: {weights:{distance:0.3, turnovers:0.7}},
+      })
+      .pipe({
+        module: './test/modules/players-data',
+        func: 'getWorstPlayer',
+      })
       .subscribe({
         next: val => {
           console.log(val)
