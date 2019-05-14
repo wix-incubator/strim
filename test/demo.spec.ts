@@ -35,13 +35,13 @@ describe('example', () => {
         next: val => {
           console.log(val)
           expect(val).toBe(4)
+          done()
         },
         error: err => {
           throw new Error(err)
         },
         complete: () => {
           console.log('complete')
-          done()
         },
       })
   })

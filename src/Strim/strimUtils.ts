@@ -31,6 +31,7 @@ export const splitToEnvironment = (
 
 export const convertToPipeableFuncs = async (
   pipeItemsByEnvironment: IStrimExecFuncDataPiped[][],
+  modulesDir: string,
 ): Promise<[[any?]?]> => {
   const pipeableFuncsByEnvironment: [[any?]?] = []
 
@@ -39,7 +40,7 @@ export const convertToPipeableFuncs = async (
 
     for (const item of environmentalItems) {
       // if (environmentalItems[0].env === Environment.Client) {
-      const pipeableFunc = (await getPipeableFunc(item)) as any
+      const pipeableFunc = (await getPipeableFunc(item, modulesDir)) as any
 
       pipeableFunc.env = item.env
       environmentalPipeableFunc.push(pipeableFunc)
@@ -57,16 +58,24 @@ export const convertToPipeableFuncs = async (
 
 const pipeableWrapper = (scope, func, args: any) => <T>(
   source: Observable<T>,
-) =>
-  new Observable<T>(observer => {
+) => {
+  let operator = false
+  let result
+  const observable = new Observable<T>(observer => {
     return source.subscribe({
       next(x) {
         const appliedArgs = args ? [args, x] : [x]
-        const result = func.apply(scope, appliedArgs)
+        result = func.apply(scope, appliedArgs)
 
         if (isObservable(result)) {
+          // console.log('isObservable', appliedArgs)
           result.subscribe(observer)
+        } else if (typeof result === 'function') {
+          // console.log(result)
+          operator = true
+          observer.next(x)
         } else {
+          // console.log('next', typeof result, result)
           observer.next(result)
         }
       },
@@ -78,6 +87,13 @@ const pipeableWrapper = (scope, func, args: any) => <T>(
       },
     })
   })
+
+  if (operator) {
+    console.log(result)
+    return observable.pipe(result)
+  }
+  return observable
+}
 
 const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
   source: Observable<T>,
@@ -116,6 +132,7 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
 
 export const getPipeableFunc = async (
   execFuncData: IStrimExecFuncDataPiped,
+  modulesDir: string,
 ) => {
   const { module, func, args, env } = execFuncData
 
@@ -124,7 +141,7 @@ export const getPipeableFunc = async (
     const clientModule = window.strimClientModules[module]
     return pipeableWrapper(clientModule, clientModule[func], args)
   } else {
-    const src = await import(module)
+    const src = await import(`${modulesDir ? `${modulesDir}/` : ''}${module}`)
     return pipeableWrapper(src, src[func], args)
   }
 }
@@ -132,6 +149,7 @@ export const getPipeableFunc = async (
 export const convertToFullStrim = (
   pipeableFuncsByEnvironment: [[any?]?],
   webSocketSubject?: WebSocketSubject<any>,
+  nodeWorker?: any,
 ) => {
   return pipeableFuncsByEnvironment.reduce(
     (observable, environmentalPipeableFunc, envIndex) => {
@@ -153,6 +171,10 @@ export const convertToFullStrim = (
           )
         }
       }
+
+      // if (environmentalPipeableFunc[0].env !== Environment.ServerWorker) {
+      //   return observable.pipe(pipeableWorkerBridge(environmentalPipeableFunc))
+      // }
 
       return environmentalPipeableFunc.reduce((subObservable, pipeableFunc) => {
         return subObservable.pipe(pipeableFunc)

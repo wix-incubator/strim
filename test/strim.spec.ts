@@ -13,13 +13,13 @@ describe('Strim', () => {
       const arr = [1, 2, 3, 4]
       strim
         .pipe({
-          module: '../../test/modules/globals',
+          module: 'globals',
           func: 'get',
           args: arr,
         })
         .toServer(true)
         .pipe({
-          module: '../../test/modules/globals',
+          module: 'globals',
           func: 'increase',
         })
         .subscribe({
@@ -43,12 +43,16 @@ describe('Strim', () => {
       const arr = [1, 2, 3, 4]
       strim
         .pipe({
-          module: '../../test/modules/globals',
+          module: 'globals',
           func: 'get',
           args: arr,
         })
         .pipe({
-          module: '../../test/modules/globals',
+          module: 'globals',
+          func: 'filter',
+        })
+        .pipe({
+          module: 'globals',
           func: 'increase',
         })
         .subscribe({

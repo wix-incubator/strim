@@ -34,11 +34,16 @@ export default class Strim implements IStrim {
   //private websocketSubject: WebSocketSubject<any>
   private wsUrl: string
   private ws: WebSocketSubject<any>
+  private modulesDir: string
   private nodeWorker: any
 
-  constructor({ wsUrl = 'ws://localhost:4321/strim/ws' }: IStrimOptions = {}) {
+  constructor({
+    wsUrl = 'ws://localhost:4321/strim/ws',
+    modulesDir = '../../test/modules/',
+  }: IStrimOptions = {}) {
     this.lastEnv = utils.getDefaultEnv()
     this.wsUrl = wsUrl
+    this.modulesDir = modulesDir
   }
 
   public pipe(strim: IStrimExecFuncDataInput): IStrim {
@@ -95,6 +100,7 @@ export default class Strim implements IStrim {
 
     const pipeableFuncsByEnvironment = await utils.convertToPipeableFuncs(
       pipeItemsByEnvironment,
+      this.modulesDir,
     )
 
     const fullStrim = utils.convertToFullStrim(
