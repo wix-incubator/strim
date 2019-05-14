@@ -41,6 +41,7 @@ describe('Strim', () => {
     it('should create a new count property', done => {
       let index = 0
       const arr = [1, 2, 3, 4]
+      const result = [3, 5]
       strim
         .pipe({
           module: 'globals',
@@ -57,7 +58,7 @@ describe('Strim', () => {
         })
         .subscribe({
           next: val => {
-            expect(val).toBe(arr[index] + 1)
+            expect(val).toBe(result[index])
             index++
           },
           error: err => {

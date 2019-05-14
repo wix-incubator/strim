@@ -59,23 +59,23 @@ export const convertToPipeableFuncs = async (
 const pipeableWrapper = (scope, func, args: any) => <T>(
   source: Observable<T>,
 ) => {
-  let operator = false
-  let result
   const observable = new Observable<T>(observer => {
     return source.subscribe({
       next(x) {
         const appliedArgs = args ? [args, x] : [x]
-        result = func.apply(scope, appliedArgs)
+        const result = func.apply(scope, appliedArgs)
 
         if (isObservable(result)) {
-          // console.log('isObservable', appliedArgs)
           result.subscribe(observer)
         } else if (typeof result === 'function') {
-          // console.log(result)
-          operator = true
-          observer.next(x)
+          of(x)
+            .pipe(result)
+            .subscribe(
+              (y: any) => observer.next(y),
+              observer.error,
+              observer.complete,
+            )
         } else {
-          // console.log('next', typeof result, result)
           observer.next(result)
         }
       },
@@ -88,10 +88,6 @@ const pipeableWrapper = (scope, func, args: any) => <T>(
     })
   })
 
-  if (operator) {
-    console.log(result)
-    return observable.pipe(result)
-  }
   return observable
 }
 
