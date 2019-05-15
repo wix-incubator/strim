@@ -225,7 +225,7 @@ function getConfituredRouter(modulesPath, bundlesDir) {
     bundlesDir,
     ENVIRONMENT.CLIENT,
   ).then(() => {
-    if (!jest) {
+    if (!global.jest) {
       console.log('strim client bundle compiled successfully')
     }
   }, console.error)
@@ -235,7 +235,7 @@ function getConfituredRouter(modulesPath, bundlesDir) {
     bundlesDir,
     ENVIRONMENT.WEBWORKER,
   ).then(() => {
-    if (!jest) {
+    if (!global.jest) {
       console.log('strim webworker bundle compiled successfully')
     }
   }, console.error)
