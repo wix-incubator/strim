@@ -40,10 +40,15 @@ export const convertToPipeableFuncs = async (
 
     for (const item of environmentalItems) {
       // if (environmentalItems[0].env === Environment.Client) {
-      const pipeableFunc = (await getPipeableFunc(item, modulesDir)) as any
+      if (environmentalItems[0].env === Environment.Server){
+        const pipeableFunc = (await getPipeableFunc(item, modulesDir)) as any
 
-      pipeableFunc.env = item.env
-      environmentalPipeableFunc.push(pipeableFunc)
+        pipeableFunc.env = item.env
+        environmentalPipeableFunc.push(pipeableFunc)
+      } else {
+        environmentalPipeableFunc.push(item)
+      }
+
       // } else {
       //   environmentalPipeableFunc.push(await getPipeableFunc(item))
       //   environmentalPipeableFunc.push(item)
