@@ -168,17 +168,17 @@ export const convertToFullStrim = (
       // when sending to the server
       if (
         envIndex !== 0 &&
-        (environmentalPipeableFunc[0].env ||
-          environmentalPipeableFunc[0][0].env) !== Environment.Client &&
-        (environmentalPipeableFunc[0].env ||
-          environmentalPipeableFunc[0][0].env) !== Environment.ClientWorker
+        environmentalPipeableFunc[0].env !== Environment.Client &&
+        environmentalPipeableFunc[0].env !== Environment.ClientWorker
       ) {
         const previousPipeableFunc = pipeableFuncsByEnvironment[
           envIndex - 1
         ] as any
         if (
-          previousPipeableFunc.env === Environment.Client ||
-          previousPipeableFunc.env === Environment.ClientWorker
+          (previousPipeableFunc.env || previousPipeableFunc[0].env) ===
+            Environment.Client ||
+          (previousPipeableFunc.env || previousPipeableFunc[0].env) ===
+            Environment.ClientWorker
         ) {
           return observable.pipe(
             pipeableWsBridge(webSocketSubject, environmentalPipeableFunc),
