@@ -41,6 +41,14 @@ export const convertToPipeableFuncs = async (
     for (let index = 0; index < environmentalItems.length; index++) {
       const item = environmentalItems[index]
       // if (environmentalItems[0].env === Environment.Client) {
+      console.log(
+        'index:',
+        index,
+        'item: ',
+        item,
+        'prev item',
+        environmentalItems[index - 1],
+      )
       if (
         item.env === Environment.Server &&
         environmentalItems[index - 1] &&
