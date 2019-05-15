@@ -13,7 +13,8 @@ or
 ## Usage
 Write a module in your modules directory
 ```js
-// myModules/myAmazingModule.js
+// myModules/myAmazingModule/package.json
+// myModules/myAmazingModule/index.js
 ```
 
 Server side (only if you need to run some of your modules on the server)
@@ -44,13 +45,13 @@ import Strim from 'strim-js'
 
 new Strim()
   .pipe({
-    module: 'globals',
+    module: 'myAmazingModule',
     func: 'get',
     args: [1, 2, 4],
   })
   .toServer()
   .pipe({
-    module: 'globals',
+    module: 'myAmazingModule',
     func: 'runningSum',
   })
   .subscribe(
@@ -74,6 +75,7 @@ The core class which activates the `strim` flow
 ##### constructor(options)
 * __options__: An object containing general `strim` options.
   * __wsUrl__ (*Default `'ws://localhost:4321/strim'`*): The websocket url.:
+  * __modulesDir__: define where the modules directory
 ##### pipe(options)
 * __options__: An object containing piped function options.
   * __module__ (*Default `'global'`*): The module name that will be imported for use of the pipe.
