@@ -134,8 +134,8 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
         }
         return observer.next(x.value)
       },
-      observer.error,
-      observer.complete,
+      err => observer.error(err),
+      () => observer.complete(),
     )
 
     return source.subscribe(

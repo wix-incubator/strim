@@ -208,7 +208,7 @@ function subjectifyStrim({ subscribe, pipeItems }, ws) {
       ws.send(JSON.stringify({ err, type: subscribe }))
     },
     () => {
-      // ws.send(JSON.stringify({unsubscribe: subscribe}))
+      ws.send(JSON.stringify({ unsubscribe: subscribe }))
     },
   )
   return subject
