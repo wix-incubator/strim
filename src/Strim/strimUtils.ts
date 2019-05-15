@@ -168,8 +168,8 @@ export const convertToFullStrim = (
       // when sending to the server
       if (
         envIndex !== 0 &&
-        environmentalPipeableFunc[0].env !== Environment.Client &&
-        environmentalPipeableFunc[0].env !== Environment.ClientWorker
+        environmentalPipeableFunc[0][0].env !== Environment.Client &&
+        environmentalPipeableFunc[0][0].env !== Environment.ClientWorker
       ) {
         const previousPipeableFunc = pipeableFuncsByEnvironment[
           envIndex - 1
