@@ -35,24 +35,16 @@ export const convertToPipeableFuncs = async (
 ): Promise<[[any?]?]> => {
   const pipeableFuncsByEnvironment: [[any?]?] = []
 
-  for (const environmentalItems of pipeItemsByEnvironment) {
+  for (let index = 0; index < pipeItemsByEnvironment.length; index++) {
+    const environmentalItems = pipeItemsByEnvironment[index]
     const environmentalPipeableFunc: [any?] = []
 
-    for (let index = 0; index < environmentalItems.length; index++) {
-      const item = environmentalItems[index]
-      // if (environmentalItems[0].env === Environment.Client) {
-      console.log(
-        'index:',
-        index,
-        'item: ',
-        item,
-        'prev item',
-        environmentalItems[index - 1],
-      )
+    for (const item of environmentalItems) {
       if (
         item.env === Environment.Server &&
-        environmentalItems[index - 1] &&
-        environmentalItems[index - 1].env === Environment.Client
+        pipeItemsByEnvironment[index - 1] &&
+        pipeItemsByEnvironment[index - 1][0] &&
+        pipeItemsByEnvironment[index - 1][0].env === Environment.Client
       ) {
         environmentalPipeableFunc.push(item)
       } else {
