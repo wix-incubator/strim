@@ -164,7 +164,7 @@ function setWs(ws) {
   })
 }
 
-function pipeableWrapper(scope, func, args = []) {
+function pipeableWrapper(scope, func, args) {
   return source =>
     new Observable(observer => {
       return source.subscribe({

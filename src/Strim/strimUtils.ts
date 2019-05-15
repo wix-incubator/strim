@@ -143,8 +143,8 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
       wsSubject.error,
       () => {
         // TODO: handle this correctly
-        // wsSubscriber.unsubscribe()
-        // return wsSubject.complete()
+        wsSubscriber.unsubscribe()
+        return wsSubject.complete()
       },
     )
   })
