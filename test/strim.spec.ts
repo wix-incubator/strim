@@ -4,7 +4,7 @@ describe('Strim', () => {
   let strim: Strim
 
   beforeEach(() => {
-    strim = new Strim()
+    strim = new Strim({ modulesDir: '../../test/modules' })
   })
 
   describe('pipe flow with worker', () => {
@@ -65,6 +65,7 @@ describe('Strim', () => {
             throw new Error(err)
           },
           complete: () => {
+            expect(index).toBe(2)
             done()
           },
         })

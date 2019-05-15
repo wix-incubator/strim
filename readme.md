@@ -19,12 +19,17 @@ Write a module in your modules directory
 Server side (only if you need to run some of your modules on the server)
 ```js
 // server.js
+const http = require('http')
 const express = require('express')
-const { setStrimModules } = require('strim-js/dist/strimModules');
+const { setStrimModules, setWs } = require('strim-js/dist/strimModules');
 
 const app = express()
-setStrimModules(app, { modulesPath: './myStrimModules' });
 
+setStrimModules(app, { modulesPath: './myStrimModules' });
+const httpServer = http.createServer(app);
+
+setWs(httpServer);
+httpServer.listen(80);
 ```
 
 Client side

@@ -60,6 +60,8 @@ const pipeableWrapper = (scope, func, args: any) => <T>(
   source: Observable<T>,
 ) => {
   const observable = new Observable<T>(observer => {
+    let funcDone = false
+    let operatorsEmits = 0
     return source.subscribe({
       next(x) {
         const appliedArgs = args ? [args, x] : [x]
@@ -68,26 +70,35 @@ const pipeableWrapper = (scope, func, args: any) => <T>(
         if (isObservable(result)) {
           result.subscribe(
             (y: any) => observer.next(y),
-            observer.error,
-            observer.complete,
+            err => observer.error(err),
+            () => observer.complete(),
           )
         } else if (typeof result === 'function') {
+          operatorsEmits++
+          funcDone = true
           of(x)
             .pipe(result)
             .subscribe(
-              (y: any) => observer.next(y),
-              observer.error,
-              observer.complete,
+              (y: any) => {
+                return observer.next(y)
+              },
+              err => observer.error(err),
+              () => {
+                operatorsEmits--
+              },
             )
         } else {
           observer.next(result)
+          funcDone = true
         }
       },
       error(err) {
         observer.error(err)
       },
       complete() {
-        // observer.complete()
+        if (funcDone && operatorsEmits === 0) {
+          observer.complete()
+        }
       },
     })
   })
