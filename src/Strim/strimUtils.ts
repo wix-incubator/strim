@@ -144,6 +144,7 @@ const pipeableWsBridge = (wsSubject, pipeItems) => <T>(
       () => {
         // TODO: handle this correctly
         wsSubscriber.unsubscribe()
+        wsSubscriber.complete()
         return wsSubject.complete()
       },
     )
