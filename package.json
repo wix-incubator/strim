@@ -112,6 +112,6 @@
     "virtual-module-webpack-plugin": "^0.4.1",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3",
-    "ws": "^6.2.0"
+    "ws": "^6.2.2"
   }
 }
